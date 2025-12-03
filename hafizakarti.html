@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لعبة الذاكرة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Temel Sayfa Stilleri --- */
+        :root {
+            --accent-color: #6f42c1; /* Tema rengi (Mor) */
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --bg-light: #f8f9fa;
+            --font-arabic: 'Markazi Text', 'Noto+Naskh+Arabic', 'Tahoma', 'Arial', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-arabic);
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            font-weight: 400;
+        }
+
+        /* --- Başlangıç Ekranı (Start Screen) --- */
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #6f42c1, #8e44ad);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000; /* En üstte */
+            transition: opacity 0.5s ease;
+        }
+
+        #start-screen h1 {
+            color: white;
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        #start-btn {
+            font-family: var(--font-arabic);
+            font-size: 3rem;
+            padding: 15px 60px;
+            border: none;
+            border-radius: 50px;
+            background-color: #fff;
+            color: var(--accent-color);
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+        }
+
+        #start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* --- Cihazı Çevir Uyarısı (Rotate Warning) --- */
+        #rotate-warning {
+            display: none; /* Varsayılan gizli, media query ile açılacak */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #2c3e50;
+            color: white;
+            z-index: 9999; /* Her şeyin üzerinde */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .rotate-icon {
+            width: 100px;
+            height: 100px;
+            border: 4px solid white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            animation: rotatePhone 2s infinite ease-in-out;
+            position: relative;
+        }
+        /* Telefon ekran çizgisi */
+        .rotate-icon::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 50%;
+            transform: translateX(-50%);
+            width: 80%; height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+        }
+
+        @keyframes rotatePhone {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+            100% { transform: rotate(90deg); }
+        }
+
+        #rotate-warning p {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        /* --- Ana Etkinlik Alanı --- */
+        .activity-container {
+            position: relative;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex; /* JS ile görünür yapılacak */
+            flex-direction: column;
+            width: 90vw;
+            height: calc(90vw * 9 / 16); /* 16:9 */
+            max-height: 90vh;
+            max-width: calc(90vh * 16 / 9); /* 16:9 */
+            opacity: 0; /* Başlangıçta görünmez, start ile açılır */
+            transition: opacity 0.5s ease;
+        }
+        
+        /* --- Header --- */
+        .header {
+            padding: 15px 25px;
+            border-bottom: 1px solid #dee2e6;
+            display: grid;
+            grid-template-areas: "replay instruction back"; 
+            grid-template-columns: 80px 1fr 80px;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        #instruction-text {
+            grid-area: instruction;
+            text-align: center; 
+            font-size: 2.5rem; 
+            font-weight: 700;
+            color: #555;
+        }
+
+        .header-button-container {
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+        }
+        .header-button-container.left { grid-area: replay; justify-content: flex-start; }
+        .header-button-container.right { grid-area: back; justify-content: flex-end; }
+
+        .icon-button {
+            background: #f0f0f0;
+            color: #555;
+            border: 1px solid #ccc;
+            border-radius: 1.5vmin;
+            cursor: pointer;
+            width: clamp(40px, 8vmin, 55px);
+            height: clamp(40px, 8vmin, 55px);
+            padding: 0;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem; 
+            flex-shrink: 0; 
+        }
+        .icon-button:hover {
+            background: #e0e0e0;
+        }
+        .icon-button svg {
+            width: clamp(24px, 5vmin, 30px);
+            height: clamp(24px, 5vmin, 30px);
+            fill: currentColor;
+        }
+        
+        #replay-button-header {
+            display: none; 
+        }
+
+        /* --- Asıl Etkinlik Alanı --- */
+        .activity-area {
+            flex-grow: 1;
+            padding: 15px;
+            overflow: auto; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Hafıza Oyunu Stilleri --- */
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 12px;
+            width: 100%; 
+            height: 100%;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: transparent;
+            cursor: pointer;
+            perspective: 1000px; 
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 10px;
+        }
+
+        .card.is-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; 
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-back {
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 8vmin; 
+        }
+
+        .card-face {
+            background-color: var(--bg-light);
+            color: #333;
+            transform: rotateY(180deg);
+            border: 5px solid var(--accent-color);
+            box-sizing: border-box;
+        }
+        
+        .card-face[data-type="word"] {
+            font-size: 5vmin; 
+            font-weight: 700;
+            padding: 5px;
+            text-align: center;
+        }
+        
+        /* --- GÜNCELLENEN KISIM: Emojiler ortalandı ve büyütüldü --- */
+        .card-face[data-type="emoji"] {
+            font-size: 11vmin; 
+            /* line-height kaldırıldı, flexbox (align-items:center) ortalamayı yapacak */
+        }
+        
+        .card.is-matched {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        /* --- Geri Bildirim Ekranı --- */
+        .feedback-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 15rem;
+            z-index: 200;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            flex-direction: column;
+        }
+        .feedback-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .feedback-overlay .correct { color: var(--success-color); }
+        
+        #replay-button-end {
+            display: none; 
+            font-size: 4.5rem; 
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            margin-top: 20px;
+        }
+        #replay-button-end:hover {
+            transform: rotate(-90deg);
+            background-color: #f0f0f0;
+        }
+        
+        #next-level-button {
+            display: none; 
+            font-family: var(--font-arabic);
+            font-size: 3rem; 
+            font-weight: 700;
+            color: white;
+            background-color: var(--success-color);
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.2s ease;
+        }
+        #next-level-button:hover {
+            background-color: #218838;
+        }
+
+        /* --- Tam Ekran Butonu --- */
+        #fullscreen-btn {
+            background: #f0f0f0;
+            color: #555;
+            border: 1px solid #ccc;
+            border-radius: 1.5vmin;
+            cursor: pointer;
+            width: clamp(40px, 8vmin, 55px);
+            height: clamp(40px, 8vmin, 55px);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px; 
+            margin-left: 10px;
+            flex-shrink: 0; 
+        }
+        #fullscreen-btn:hover {
+            background: #e0e0e0;
+        }
+        #fullscreen-btn svg {
+            width: clamp(24px, 5vmin, 30px);
+            height: clamp(24px, 5vmin, 30px);
+            fill: currentColor;
+        }
+        #fullscreen-btn .icon-open { display: block; }
+        #fullscreen-btn .icon-close { display: none; }
+        body.fullscreen #fullscreen-btn .icon-open { display: none; }
+        body.fullscreen #fullscreen-btn .icon-close { display: block; }
+
+        body.fullscreen .activity-container {
+            width: 100vw;
+            height: calc(100vw * 9 / 16); 
+            max-height: 100vh;
+            max-width: calc(100vh * 16 / 9);
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        /* --- MEDYA SORGULARI --- */
+        @media screen and (orientation: portrait) and (max-width: 1024px) {
+            #rotate-warning {
+                display: flex;
+            }
+            .activity-container, #start-screen {
+                display: none !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="rotate-warning">
+        <div class="rotate-icon"></div>
+        <p>يُرْجى تَدْوير الجِهاز</p>
+        <p style="font-size: 1.5rem; opacity: 0.8;">(Lütfen ekranı yan çevirin)</p>
+    </div>
+
+    <div id="start-screen">
+        <button id="start-btn"> اِبْــدَأْ</button>
+    </div>
+
+    <div class="activity-container">
+        
+        <div class="header">
+            <div class="header-button-container left">
+                <button class="icon-button" id="replay-button-header" onclick="restartGame()">🔄</button>
+            </div>
+            
+            <div id="instruction-text">...</div>
+            
+            <div class="header-button-container right">
+                <button id="fullscreen-btn">
+                    <svg class="icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M5 10h2V7h3V5H5v5zM14 5v2h3v3h2V5h-5zM5 19v-5h2v3h3v2H5zM14 19v-2h3v-3h2v5h-5z"/>
+                    </svg>
+                    <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+                    </svg>
+                </button>
+                <a href="index.html" class="icon-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="activity-area">
+            <div id="game-board"></div>
+        </div>
+
+        <div class="feedback-overlay" id="feedback-overlay">
+            <span id="feedback-icon"></span>
+            <button id="next-level-button" onclick="startNextLevel()">المُسْتَوى التّالي ➡</button>
+            <button id="replay-button-end" onclick="restartGame()">🔄</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 2 Seviyeli Oyun Verisi ---
+        const levelsData = [
+            // Seviye 1: Mevsimler, Hava Durumu ve Kıyafetler (Ders 1 Ağırlıklı)
+            [
+                { id: 1, type: 'word', content: 'صَيْف' }, { id: 1, type: 'emoji', content: '☀️' }, // Yaz
+                { id: 2, type: 'word', content: 'شِتاء' }, { id: 2, type: 'emoji', content: '❄️' }, // Kış
+                { id: 3, type: 'word', content: 'مَطَر' }, { id: 3, type: 'emoji', content: '🌧️' }, // Yağmur
+                { id: 4, type: 'word', content: 'مِعْطَف' }, { id: 4, type: 'emoji', content: '🧥' }, // Palto/Mont
+                { id: 5, type: 'word', content: 'قَميص' }, { id: 5, type: 'emoji', content: '👕' }, // Gömlek/Tişört
+                { id: 6, type: 'word', content: 'فُسْتان' }, { id: 6, type: 'emoji', content: '👗' }, // Elbise
+                { id: 7, type: 'word', content: 'قُبَّعَة' }, { id: 7, type: 'emoji', content: '🧢' }, // Şapka
+                { id: 8, type: 'word', content: 'مِظَلَّة' }, { id: 8, type: 'emoji', content: '☔' }, // Şemsiye
+            ],
+            // Seviye 2: Alışveriş, Teknoloji ve Gıda (Ders 2 Ağırlıklı)
+            [
+                { id: 9, type: 'word', content: 'سُوق' }, { id: 9, type: 'emoji', content: '🛒' }, // Çarşı/Pazar
+                { id: 10, type: 'word', content: 'نَقْد' }, { id: 10, type: 'emoji', content: '💵' }, // Nakit Para
+                { id: 11, type: 'word', content: 'بِطاقَة' }, { id: 11, type: 'emoji', content: '💳' }, // Kart
+                { id: 12, type: 'word', content: 'جَوّال' }, { id: 12, type: 'emoji', content: '📱' }, // Cep Telefonu
+                { id: 13, type: 'word', content: 'حاسوب' }, { id: 13, type: 'emoji', content: '💻' }, // Bilgisayar
+                { id: 14, type: 'word', content: 'تُفّاح' }, { id: 14, type: 'emoji', content: '🍎' }, // Elma
+                { id: 15, type: 'word', content: 'خُبْز' }, { id: 15, type: 'emoji', content: '🍞' }, // Ekmek
+                { id: 16, type: 'word', content: 'طَماطِم' }, { id: 16, type: 'emoji', content: '🍅' }  // Domates
+            ]
+        ];
+
+        // --- Elementler ---
+        const gameBoard = document.getElementById('game-board');
+        const instructionText = document.getElementById('instruction-text');
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const activityContainer = document.querySelector('.activity-container');
+        const startScreen = document.getElementById('start-screen');
+        const startBtn = document.getElementById('start-btn');
+        
+        let audioCtx = null;
+        let hasFlippedCard = false;
+        let lockBoard = false; 
+        let firstCard, secondCard;
+        let matchesFound = 0;
+        let totalPairs = 0;
+        let currentLevel = 0; 
+
+        // --- BAŞLANGIÇ BUTONU İŞLEVİ ---
+        startBtn.addEventListener('click', () => {
+            // 1. Tam ekrana geçmeye çalış
+            toggleFullScreen(true); 
+            
+            // 2. Ses bağlamını başlat
+            initAudioContext();
+
+            // 3. Başlangıç ekranını gizle
+            startScreen.style.opacity = '0';
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+            }, 500);
+
+            // 4. Oyun alanını göster
+            activityContainer.style.opacity = '1';
+
+            // 5. Oyunu kur
+            createBoard();
+        });
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        function playSound(type) {
+            if (!audioCtx) return; 
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'pop') { 
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(300, now);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+                oscillator.start(now);
+                oscillator.stop(now + 0.1);
+            } else if (type === 'correct') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(440, now);
+                oscillator.frequency.linearRampToValueAtTime(880, now + 0.2);
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+                oscillator.start(now);
+                oscillator.stop(now + 0.2);
+            } else if (type === 'incorrect') {
+                oscillator.type = 'triangle'; 
+                oscillator.frequency.setValueAtTime(300, now);
+                oscillator.frequency.linearRampToValueAtTime(150, now + 0.3);
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+            }
+        }
+        
+        // --- Fisher-Yates Shuffle ---
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createBoard() {
+            gameBoard.innerHTML = ''; 
+            gameBoard.style.gridTemplateRows = 'repeat(4, 1fr)';
+            
+            const currentLevelData = levelsData[currentLevel];
+            totalPairs = currentLevelData.length / 2;
+            matchesFound = 0;
+            instructionText.textContent = "جِد الأزْواج المُتَطابِقَة";
+            
+            const shuffledData = shuffle([...currentLevelData]);
+            
+            shuffledData.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.id = item.id; 
+
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-face" data-type="${item.type}">
+                            ${item.content}
+                        </div>
+                        <div class="card-back">
+                            ؟
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+            });
+        }
+        
+        function flipCard() {
+            if (lockBoard) return; 
+            if (this === firstCard) return; 
+            
+            this.classList.add('is-flipped');
+            playSound('pop');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.id === secondCard.dataset.id;
+            if (isMatch) disableCards();
+            else unflipCards();
+        }
+
+        function disableCards() {
+            playSound('correct');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            
+            firstCard.classList.add('is-matched');
+            secondCard.classList.add('is-matched');
+
+            matchesFound++;
+            
+            if (matchesFound === totalPairs) {
+                setTimeout(showWinScreen, 1000);
+            }
+            resetBoardState();
+        }
+        
+        function unflipCards() {
+            lockBoard = true; 
+            playSound('incorrect');
+            setTimeout(() => {
+                firstCard.classList.remove('is-flipped');
+                secondCard.classList.remove('is-flipped');
+                resetBoardState();
+            }, 1500); 
+        }
+        
+        function resetBoardState() {
+            hasFlippedCard = false;
+            lockBoard = false;
+            firstCard = null;
+            secondCard = null;
+        }
+
+        function showWinScreen() {
+            const nextLevelButton = document.getElementById('next-level-button');
+            const replayButtonEnd = document.getElementById('replay-button-end');
+            const replayButtonHeader = document.getElementById('replay-button-header');
+
+            if ((currentLevel + 1) < levelsData.length) {
+                instructionText.textContent = "";
+                feedbackIcon.textContent = '👍';
+                feedbackIcon.className = 'correct';
+                replayButtonEnd.style.display = 'none'; 
+                nextLevelButton.style.display = 'block'; 
+                feedbackOverlay.classList.add('show');
+                replayButtonHeader.style.display = 'none';
+            } else {
+                instructionText.textContent = "أَحْسَنْت! لَقَد أَكْمَلْتَ الجَمِيع"; 
+                feedbackIcon.textContent = '✔';
+                feedbackIcon.className = 'correct';
+                replayButtonEnd.style.display = 'block'; 
+                nextLevelButton.style.display = 'none'; 
+                feedbackOverlay.classList.add('show');
+                replayButtonHeader.style.display = 'flex';
+            }
+        }
+
+        function startNextLevel() {
+            playSound('pop');
+            feedbackOverlay.classList.remove('show');
+            currentLevel++; 
+            document.getElementById('next-level-button').style.display = 'none';
+            document.getElementById('replay-button-end').style.display = 'none';
+            resetBoardState();
+            setTimeout(createBoard, 500);
+        }
+
+        function restartGame() {
+            playSound('pop');
+            feedbackOverlay.classList.remove('show'); 
+            document.getElementById('next-level-button').style.display = 'none';
+            document.getElementById('replay-button-end').style.display = 'none';
+            document.getElementById('replay-button-header').style.display = 'none';
+            
+            if (firstCard) firstCard.classList.remove('is-flipped');
+            if (secondCard) secondCard.classList.remove('is-flipped');
+            
+            currentLevel = 0; 
+            resetBoardState();
+            setTimeout(createBoard, 500);
+        }
+
+        // --- Tam Ekran Mantığı ---
+        function toggleFullScreen(forceOpen = false) {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                const el = document.documentElement; 
+                if (el.requestFullscreen) el.requestFullscreen().catch(e => console.log(e));
+                else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+                else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+                else if (el.msRequestFullscreen) el.msRequestFullscreen();
+            } else if (!forceOpen) {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+                else if (document.msExitFullscreen) document.msExitFullscreen();
+            }
+        }
+
+        function updateFullscreenClass() {
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+                document.body.classList.add('fullscreen');
+            } else {
+                document.body.classList.remove('fullscreen');
+            }
+        }
+        
+        document.addEventListener('fullscreenchange', updateFullscreenClass);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenClass);
+        document.addEventListener('mozfullscreenchange', updateFullscreenClass);
+        document.addEventListener('MSFullscreenChange', updateFullscreenClass);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const fsBtn = document.getElementById('fullscreen-btn');
+            if (fsBtn) {
+                fsBtn.addEventListener('click', () => toggleFullScreen());
+            }
+        });
+
+    </script>
+</body>
+</html>
