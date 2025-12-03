@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>نَشاط: الوَحْدَة الثّانِيَة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Temel Sayfa Stilleri --- */
+        :root {
+            --accent-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --bg-light: #f8f9fa;
+            --font-arabic: 'Markazi Text', 'Tahoma', 'Arial', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-arabic);
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            font-weight: 400;
+        }
+
+        /* --- Ana Etkinlik Alanı (16:9) --- */
+        .activity-container {
+            position: relative;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none; /* Başlangıçta gizli */
+            flex-direction: column;
+            width: 90vw;
+            height: calc(90vw * 9 / 16); 
+            max-height: 90vh;
+            max-width: calc(90vh * 16 / 9);
+        }
+        
+        /* --- Geri Tuşu --- */
+        .back-button-container {
+            grid-area: back;
+            display: flex;
+            justify-content: flex-end; 
+            align-items: center; 
+        }
+        .back-button {
+            background: #f0f0f0;
+            color: #555;
+            border: 1px solid #ccc;
+            border-radius: 1.5vmin;
+            cursor: pointer;
+            width: clamp(40px, 8vmin, 55px);
+            height: clamp(40px, 8vmin, 55px);
+            padding: 0;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0; 
+        }
+        .back-button:hover {
+            background: #e0e0e0;
+        }
+        .back-button svg {
+            width: clamp(24px, 5vmin, 30px);
+            height: clamp(24px, 5vmin, 30px);
+            fill: currentColor;
+        }
+
+        /* --- Başlık --- */
+        .header {
+            padding: 15px 25px;
+            border-bottom: 1px solid #dee2e6;
+            display: grid;
+            grid-template-areas: "instruction back"; 
+            grid-template-columns: 1fr auto; 
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0; 
+        }
+        
+        #instruction-text {
+            grid-area: instruction;
+            text-align: right; 
+            font-size: 2.2rem; 
+            font-weight: 700;
+            color: #555;
+        }
+        
+        /* --- Asıl Etkinlik Alanı --- */
+        .activity-area {
+            flex-grow: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;     
+            overflow: hidden; 
+        }
+
+        /* --- Sınıflandırma Konteyneri --- */
+        .categorize-container {
+            display: flex;
+            flex-direction: row-reverse; /* Sağda kelimeler, solda kutular */
+            width: 100%;  
+            height: 100%; 
+            gap: 15px;
+        }
+
+        /* --- Sol Taraf (Hedef Kutular - GENİŞLETİLDİ) --- */
+        .drop-zones-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 Sütun */
+            gap: 15px;
+            flex: 1; /* Kalan tüm alanı kapla */
+            overflow-y: auto; 
+            padding: 5px;
+        }
+
+        .category-drop-zone {
+    background-color: var(--bg-light);
+    border: 2px solid var(--accent-color);
+    border-radius: 10px;
+    padding: 10px;
+    min-height: 150px;
+    
+    display: grid;
+    /* BURAYI DEĞİŞTİRİYORUZ: Her zaman 2 eşit sütun */
+    grid-template-columns: 1fr 1fr; 
+    grid-auto-rows: min-content;
+    
+    /* Kelimeler arası boşluğu sabitliyoruz */
+    gap: 8px; 
+    
+    align-content: start;
+    justify-items: center;
+}
+
+        .category-drop-zone h3 {
+            grid-column: 1 / -1; 
+            margin: 0 0 10px 0;
+            font-size: 2.1rem; 
+            color: var(--accent-color);
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+            width: 100%;
+            text-align: center;
+        }
+/* --- Tek kalan son kutuyu ortalama kodu --- */
+.drop-zones-container .category-drop-zone:last-child:nth-child(odd) {
+    grid-column: span 2;       /* 1. Adım: Tüm satırı (2 sütunu) kaplamasını söyle */
+    justify-self: center;      /* 2. Adım: Kendini o satırda ortala */
+    width: calc(50% - 7.5px);  /* 3. Adım: Genişliği, üstteki kutularla eşitle (Gap 15px olduğu için yarısını düştük) */
+}
+        
+        /* --- Sağ Taraf (Kelime Bankası - DARALTILDI & 3 SÜTUN) --- */
+        .word-bank-container {
+            /* Genişlik Ayarı: Ekranın %30'u kadar olsun (Daraltıldı) */
+            flex: 0 0 30%; 
+            height: 100%; 
+            background: #fff;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 10px; 
+            
+            /* CSS GRID: 3 SÜTUN */
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 3 Eşit Sütun */
+            align-content: start; /* Yukarı hizala */
+            gap: 8px; /* Kelimeler arası boşluk */
+            
+            overflow-y: auto; 
+            box-sizing: border-box;
+        }
+
+        .word-item {
+            padding: 5px 2px;
+            color: white;
+            font-size: 1.8rem; /* Font biraz küçültüldü sığması için */
+            font-weight: 700;
+            border-radius: 8px; 
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            
+            width: 100%; /* Sütun genişliğine uy */
+            height: auto;
+            min-height: 50px; /* Yükseklik */
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            line-height: 1.1;
+        }
+        
+        .word-item:hover {
+            filter: brightness(85%);
+        }
+        
+        .word-item.mouse-dragging {
+            opacity: 0.5;
+            box-shadow: none;
+        }
+        
+        .word-item.correct {
+            cursor: default;
+            background-color: var(--success-color) !important;
+            filter: brightness(100%) !important;
+        }
+
+        /* --- Geri Bildirim --- */
+        .feedback-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 15rem;
+            z-index: 200;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            flex-direction: column; 
+        }
+        .feedback-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .feedback-overlay .correct { color: var(--success-color); }
+        .feedback-overlay .incorrect { color: var(--danger-color); }
+        
+        #replay-button {
+            display: none; 
+            font-size: 4.5rem; 
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            margin-top: 20px; 
+        }
+        #replay-button:hover {
+            transform: rotate(-90deg);
+            background-color: #f0f0f0;
+        }
+        .feedback-overlay.show.game-finished #replay-button {
+            display: block;
+        }
+        
+        /* --- Tam Ekran Butonu --- */
+        #fullscreen-btn {
+            background: #f0f0f0;
+            color: #555;
+            border: 1px solid #ccc;
+            border-radius: 1.5vmin;
+            cursor: pointer;
+            width: clamp(40px, 8vmin, 55px);
+            height: clamp(40px, 8vmin, 55px);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px; 
+            margin-left: 10px; 
+            flex-shrink: 0; 
+        }
+        #fullscreen-btn:hover {
+            background: #e0e0e0;
+        }
+        #fullscreen-btn svg {
+            width: clamp(24px, 5vmin, 30px);
+            height: clamp(24px, 5vmin, 30px);
+            fill: currentColor;
+        }
+        #fullscreen-btn .icon-open { display: block; }
+        #fullscreen-btn .icon-close { display: none; }
+        body.fullscreen #fullscreen-btn .icon-open { display: none; }
+        body.fullscreen #fullscreen-btn .icon-close { display: block; }
+
+        body.fullscreen .activity-container {
+            width: 100vw;
+            height: calc(100vw * 9 / 16);  
+            max-height: 100vh;
+            max-width: calc(100vh * 16 / 9);
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        /* --- Mobil Dikey Düzen (Portrait) --- */
+        @media (orientation: portrait) {
+            .activity-container {
+                width: 95vw;
+                height: calc(95vw * 16 / 9); 
+                max-height: 95vh;
+                max-width: calc(95vh * 9 / 16); 
+            }
+            #start-screen h1 {
+                font-size: 3rem; 
+                margin-bottom: 5px;
+            }
+
+            #start-screen p {
+                font-size: 1.5rem !important; 
+            }
+
+            #start-button-main {
+                font-size: 2rem;    
+                padding: 8px 40px;  
+                margin-top: 20px;
+                width: 60%;         
+                max-width: 300px;
+            }
+            body.fullscreen .activity-container {
+                width: 100vw;
+                height: calc(100vw * 16 / 9);
+                max-height: 100vh;
+                max-width: calc(100vh * 9 / 16);
+            }
+            .header {
+                padding: 10px 15px;
+            }
+            #instruction-text {
+                font-size: 1.4rem; 
+            }
+            .categorize-container {
+                flex-direction: column;
+            }
+            .drop-zones-container {
+                width: 100%;
+                flex: 1; 
+            }
+            .word-bank-container {
+                 width: 100%; 
+                 height: auto;
+                 flex: 0 0 auto; 
+                 max-height: 200px; 
+                 grid-template-columns: repeat(2, 1fr);
+            }
+           .word-item {
+                font-size: 0.6rem; 
+                min-height: 60px;  
+                width: 100%;
+            }
+        }
+
+        /* ================================================================= */
+        /* --- GÜNCELLENMİŞ: MOBİL YATAY (LANDSCAPE) AYARLARI --- */
+        /* ================================================================= */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            
+            html {
+                font-size: 10px !important; 
+            }
+
+            .activity-container {
+                width: 100vw !important;
+                height: 100vh !important;
+                max-width: none !important;
+                max-height: none !important;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .header {
+                padding: 2px 15px; /* Üst barı biraz daha daralttık */
+                height: 40px; 
+            }
+            
+            #instruction-text {
+                font-size: 1.8rem;
+                margin: 0;
+            }
+
+            .activity-area {
+                padding: 5px;
+            }
+
+            .categorize-container {
+                gap: 10px; /* Ana sütunlar arası boşluk */
+            }
+
+            /* --- Sol Taraf (Kutular) --- */
+            .drop-zones-container {
+                gap: 15px; /* İKİ KUTU ARASINDAKİ BOŞLUK ARTTIRILDI */
+                padding: 0;
+            }
+
+            .category-drop-zone {
+                min-height: auto; 
+                padding: 8px; /* Kutu iç boşluğu arttırıldı */
+                
+                /* Kelimeler arası boşluk (Hem yatay hem dikey) */
+                gap: 8px !important; 
+                
+                /* Mobilde kelimeler daha rahat sığsın diye genişliği esnettik */
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)) !important;
+                
+                /* İçerik azsa ortada dursun */
+                justify-content: center; 
+            }
+
+            .category-drop-zone h3 {
+                font-size: 1.6rem; 
+                margin-bottom: 5px;
+            }
+
+            /* --- Sağ Taraf (Kelime Bankası) --- */
+            .word-bank-container {
+                flex: 0 0 22%; /* Alanı biraz daha daraltıp kutulara yer açtık */
+                padding: 5px;
+                gap: 6px;
+                grid-template-columns: repeat(2, 1fr); 
+            }
+
+            .word-item {
+                font-size: 1.3rem; 
+                min-height: 32px;  
+                padding: 2px;
+            }
+
+            .drop-zones-container, .word-bank-container {
+                overflow-y: auto; 
+            }
+        }
+
+        /* ========================================= */
+        /* --- START SCREEN (Sadece Arapça) --- */
+        /* ========================================= */
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #007bff 0%, #0d6efd 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            text-align: center;
+        }
+        
+        #start-screen h1 {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        #start-button-main {
+            background: #ffc107;
+            color: #333;
+            font-family: var(--font-arabic);
+            font-size: 3rem;
+            font-weight: bold;
+            padding: 10px 60px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 30px;
+        }
+
+        #start-button-main:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+            background: #ffca2c;
+        }
+
+        /* ========================================= */
+        /* --- ORIENTATION WARNING (Sadece Arapça) --- */
+        /* ========================================= */
+        #orientation-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #212529;
+            color: white;
+            display: none; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; 
+            text-align: center;
+        }
+
+        .phone-animation {
+            width: 60px;
+            height: 100px;
+            border: 4px solid white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            animation: rotate-phone 2s infinite ease-in-out;
+        }
+
+        @keyframes rotate-phone {
+            0% { transform: rotate(0deg); }
+            40% { transform: rotate(90deg); }
+            100% { transform: rotate(90deg); }
+        }
+
+        #orientation-warning p {
+            font-size: 2rem;
+            font-family: var(--font-arabic);
+            margin: 0;
+        }
+
+        @media screen and (orientation: portrait) and (max-width: 900px) {
+            #orientation-warning {
+                display: flex;
+            }
+            .activity-container, #start-screen {
+                display: none !important;
+            }
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+</head>
+<body>
+
+    <div id="start-screen">
+        
+        
+        <button id="start-button-main" onclick="startGame()">اِبْدَأْ</button>
+    </div>
+
+    <div id="orientation-warning">
+        <div class="phone-animation"></div>
+        <p>يُرْجى تَدْوير الجِهاز</p>
+    </div>
+
+    <div class="activity-container" id="game-container">
+        
+        <div class="header">
+            <div id="instruction-text">...</div>
+            <div class="back-button-container">
+                <button id="fullscreen-btn">
+                    <svg class="icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M5 10h2V7h3V5H5v5zM14 5v2h3v3h2V5h-5zM5 19v-5h2v3h3v2H5zM14 19v-2h3v-3h2v5h-5z"/>
+                    </svg>
+                    <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+                    </svg>
+                </button>
+                <a href="#" onclick="location.reload()" class="back-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="activity-area" id="activity-area">
+            </div>
+
+        <div class="feedback-overlay" id="feedback-overlay">
+            <span id="feedback-icon"></span>
+            <button id="replay-button" onclick="restartGame()">🔄</button>
+        </div>
+
+    </div>
+
+<script>
+        // --- 20 benzersiz renk ---
+        const colorPalette = [
+            '#007bff', '#dc3545', '#28a745', '#ffc107', '#17a2b8', '#6f42c1', '#fd7e14',
+            '#20c997', '#6610f2', '#e83e8c', '#d63384', '#198754', '#0d6efd', '#adb5bd',
+            '#ff6b6b', '#fca311', '#90be6d', '#43aa8b', '#577590', '#f94144'
+        ];
+
+        // --- Veri Bankası ---
+        const activityDataBank = [
+    // 1. TUR: MEVSİMLER, HAVA DURUMU VE KIYAFETLER (Ders 1 Odaklı)
+    {
+        title: "صَنِّف الكَلِمات", 
+        categories: ["الفُصول", "حالَة الطَّقْس", "المَلابِس"], 
+        words: [
+            // Mevsimler
+            { w: "الرَّبيع", cat: "الفُصول" },   // İlkbahar
+            { w: "الصَّيْف", cat: "الفُصول" },   // Yaz
+            { w: "الخَريف", cat: "الفُصول" },   // Sonbahar
+            { w: "الشِّتاء", cat: "الفُصول" },   // Kış
+
+            // Hava Durumu
+            { w: "مُشْمِس", cat: "حالَة الطَّقْس" }, // Güneşli
+            { w: "مُمْطِر", cat: "حالَة الطَّقْس" }, // Yağmurlu
+            { w: "مُثْلِج", cat: "حالَة الطَّقْس" }, // Karlı
+            { w: "حارّ", cat: "حالَة الطَّقْس" },    // Sıcak
+
+            // Kıyafetler
+            { w: "مِعْطَف", cat: "المَلابِس" },    // Palto/Mont
+            { w: "قَميص", cat: "المَلابِس" },      // Gömlek
+            { w: "فُسْتان", cat: "المَلابِس" },    // Elbise
+            { w: "قُبَّعَة", cat: "المَلابِس" }    // Şapka
+        ]
+    },
+
+    // 2. TUR: RENKLER, SIFATLAR VE ALIŞVERİŞ EŞYALARI (Ders 2 Odaklı)
+    {
+        title: "صَنِّف الكَلِمات", 
+        categories: ["الأَلْوان", "الصِّفات", "أَشْياء التَّسَوُّق"], 
+        words: [
+            // Renkler
+            { w: "أَحْمَر", cat: "الأَلْوان" },    // Kırmızı
+            { w: "أَزْرَق", cat: "الأَلْوان" },    // Mavi
+            { w: "أَسْوَد", cat: "الأَلْوان" },    // Siyah
+            { w: "أَبْيَض", cat: "الأَلْوان" },    // Beyaz
+
+            // Sıfatlar (Zıt Anlamlılar)
+            { w: "غالٍ", cat: "الصِّفات" },        // Pahalı
+            { w: "رَخيص", cat: "الصِّفات" },       // Ucuz
+            { w: "جَديد", cat: "الصِّفات" },       // Yeni
+            { w: "قَديم", cat: "الصِّفات" },       // Eski
+
+            // Alışveriş Eşyaları (Gıda ve Teknoloji Karışık)
+            { w: "سُكَّر", cat: "أَشْياء التَّسَوُّق" }, // Şeker
+            { w: "مِلْح", cat: "أَشْياء التَّسَوُّق" },  // Tuz
+            { w: "حاسوب", cat: "أَشْياء التَّسَوُّق" }, // Bilgisayar
+            { w: "جَوّال", cat: "أَشْياء التَّسَوُّق" }  // Cep Telefonu
+        ]
+    }
+];
+
+        // --- Gerekli Elementler ---
+        const activityArea = document.getElementById('activity-area');
+        const instructionText = document.getElementById('instruction-text');
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const startScreen = document.getElementById('start-screen');
+        const gameContainer = document.getElementById('game-container');
+        
+        let audioCtx = null;
+        let currentActivityIndex = 0; 
+        let totalWordsRemaining = 0;
+        
+        // --- SES FONKSİYONLARI ---
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+        
+        function playSound(type) {
+            if (!audioCtx) return; 
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.type = 'sine';
+            const now = audioCtx.currentTime;
+
+            if (type === 'touch') {
+                oscillator.frequency.setValueAtTime(200, now);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+                oscillator.start(now);
+                oscillator.stop(now + 0.1);
+            } else if (type === 'correct') {
+                oscillator.frequency.setValueAtTime(440, now);
+                oscillator.frequency.linearRampToValueAtTime(880, now + 0.2);
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+                oscillator.start(now);
+                oscillator.stop(now + 0.2);
+            } else if (type === 'incorrect') {
+                oscillator.frequency.setValueAtTime(300, now);
+                oscillator.frequency.linearRampToValueAtTime(150, now + 0.3);
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+            }
+        }
+
+        // --- BAŞLAMA FONKSİYONU ---
+        function startGame() {
+            initAudioContext();
+            startScreen.style.display = 'none';
+            gameContainer.style.display = 'flex';
+            loadActivity();
+            triggerFullscreen();
+        }
+
+        function triggerFullscreen() {
+            const docEl = document.documentElement;
+            const requestFs = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullscreen || docEl.msRequestFullscreen;
+            
+            if(requestFs) {
+                requestFs.call(docEl).catch(err => {
+                    console.log("Full screen error:", err);
+                });
+            }
+        }
+
+        // --- Karıştırma ---
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- ETKİNLİK YÜKLEYİCİ ---
+        function loadActivity() {
+            activityArea.innerHTML = '';
+            const data = activityDataBank[currentActivityIndex];
+            instructionText.textContent = data.title; 
+            feedbackOverlay.classList.remove('show', 'game-finished');
+            buildCategorize(data); 
+        }
+        
+        function buildCategorize(data) {
+            const container = document.createElement('div');
+            container.className = 'categorize-container';
+
+            const dropZonesContainer = document.createElement('div');
+            dropZonesContainer.className = 'drop-zones-container';
+            
+            data.categories.forEach((categoryName) => {
+                const dropZone = document.createElement('div');
+                dropZone.className = 'category-drop-zone';
+                dropZone.dataset.category = categoryName; 
+                
+                const title = document.createElement('h3');
+                title.textContent = categoryName;
+                
+                dropZone.appendChild(title);
+                dropZonesContainer.appendChild(dropZone);
+            });
+            
+            const wordBank = document.createElement('div');
+            wordBank.className = 'word-bank-container';
+            wordBank.id = 'word-bank-container'; 
+            
+            const shuffledWords = shuffle([...data.words]);
+            totalWordsRemaining = shuffledWords.length; 
+            
+            shuffledWords.forEach((wordData, index) => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'word-item';
+                wordItem.id = `word-${index}`;
+                wordItem.textContent = wordData.w;
+                wordItem.dataset.wordCat = wordData.cat; 
+                wordItem.draggable = true;
+                wordItem.style.backgroundColor = colorPalette[index % colorPalette.length];
+                
+                wordBank.appendChild(wordItem);
+            });
+            
+            container.appendChild(dropZonesContainer);
+            container.appendChild(wordBank);
+            activityArea.appendChild(container);
+            
+            addDragDropListeners();
+        }
+
+        function addDragDropListeners() {
+            const draggables = document.querySelectorAll('.word-item');
+            const containers = document.querySelectorAll('.category-drop-zone, .word-bank-container');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', (e) => {
+                    draggable.classList.add('mouse-dragging'); 
+                    e.dataTransfer.setData('text/plain', draggable.id);
+                    playSound('touch');
+                });
+                draggable.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('mouse-dragging');
+                });
+            });
+
+            containers.forEach(container => {
+                container.addEventListener('dragover', e => e.preventDefault());
+                
+                container.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const id = e.dataTransfer.getData('text/plain');
+                    const wordElement = document.getElementById(id);
+                    const dropZone = e.target.closest('.category-drop-zone');
+                    
+                    if (wordElement && dropZone) {
+                        checkCategoryDrop(wordElement, dropZone);
+                    } else if (wordElement && e.target.closest('.word-bank-container')) {
+                        e.target.closest('.word-bank-container').appendChild(wordElement);
+                    }
+                });
+            });
+        }
+        
+        function checkCategoryDrop(wordElement, dropZone) {
+            const zoneCategory = dropZone.dataset.category;
+            const wordCategory = wordElement.dataset.wordCat;
+
+            if (zoneCategory === wordCategory) {
+                playSound('correct');
+                dropZone.appendChild(wordElement); 
+                wordElement.draggable = false;
+                wordElement.classList.add('correct'); 
+                wordElement.classList.remove('mouse-dragging'); 
+                
+                totalWordsRemaining--; 
+                
+                if (totalWordsRemaining === 0) {
+                    instructionText.textContent = "أَحْسَنْت! لَقَد أَكْمَلْتَ";
+                    feedbackOverlay.classList.add('game-finished');
+                    
+                    currentActivityIndex++;
+                    if (currentActivityIndex >= activityDataBank.length) {
+                        currentActivityIndex = 0; 
+                    }
+                    
+                    showFeedback(true); 
+                }
+            } else {
+                playSound('incorrect');
+                wordElement.classList.remove('mouse-dragging'); 
+                document.getElementById('word-bank-container').appendChild(wordElement);
+            }
+        }
+
+        function showFeedback(isCorrect) {
+            if (isCorrect) {
+                feedbackIcon.textContent = '✔';
+                feedbackIcon.className = 'correct';
+                playSound('correct');
+                feedbackOverlay.classList.add('show');
+            }
+        }
+        
+        function restartGame() {
+            playSound('touch');
+            feedbackOverlay.classList.remove('show', 'game-finished'); 
+            loadActivity(); 
+        }
+        
+        // --- Tam Ekran Dinleyicileri ---
+        function setupFullscreen() {
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const body = document.body;
+
+            if (!fullscreenBtn) return; 
+
+            const docEl = document.documentElement;
+            const requestFs = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullscreen || docEl.msRequestFullscreen;
+            const exitFs = document.exitFullscreen || document.mozCancelFullScreen || document.webkitExitFullscreen || document.msExitFullscreen;
+
+            function getFullscreenElement() {
+                return document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+            }
+
+            function toggleFullScreen() {
+                if (!getFullscreenElement()) {
+                    if(requestFs) requestFs.call(docEl);
+                } else {
+                    if(exitFs) exitFs.call(document);
+                }
+            }
+
+            function syncFullscreenState() {
+                if (getFullscreenElement()) {
+                    body.classList.add('fullscreen');
+                } else {
+                    body.classList.remove('fullscreen');
+                }
+            }
+
+            fullscreenBtn.addEventListener('click', toggleFullScreen);
+            
+            document.addEventListener('fullscreenchange', syncFullscreenState);
+            document.addEventListener('mozfullscreenchange', syncFullscreenState);
+            document.addEventListener('webkitfullscreenchange', syncFullscreenState);
+            document.addEventListener('msfullscreenchange', syncFullscreenState);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupFullscreen(); 
+        });
+
+    </script>
+</body>
+</html>
