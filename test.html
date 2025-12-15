@@ -26,7 +26,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            overflow: hidden; /* Dış scrollbarları engeller, temiz görünüm sağlar */
             font-weight: 400;
         }
 
@@ -39,21 +39,21 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            width: 90vw;
-            height: calc(90vw * 9 / 16);
-            max-height: 90vh;
-            max-width: calc(90vh * 16 / 9);
+            width: clamp(320px, 95vw, 1400px);
+            height: calc(95vw * 9 / 16); /* 16:9 oranı korunur */
+            max-height: 95vh;
+            max-width: calc(95vh * 16 / 9);
         }
         
         /* --- Üst Menü (Header) --- */
         .header {
-            padding: 10px 20px;
+            padding: 15px 20px;
             border-bottom: 1px solid #dee2e6;
             display: grid;
             grid-template-areas: "progress instruction buttons";
             grid-template-columns: 200px 1fr auto; 
             align-items: center;
-            gap: 20px;
+            gap: 30px;
             background: #fff;
             z-index: 10;
         }
@@ -61,7 +61,7 @@
         .top-buttons {
             grid-area: buttons;
             display: flex;
-            gap: 10px; 
+            gap: 15px; 
             justify-content: flex-end;
         }
 
@@ -71,8 +71,8 @@
             border: 1px solid #ccc;
             border-radius: 1.5vmin;
             cursor: pointer;
-            width: clamp(35px, 7vmin, 50px);
-            height: clamp(35px, 7vmin, 50px);
+            width: clamp(30px, 6vmin, 50px); 
+            height: clamp(30px, 6vmin, 50px);
             padding: 0;
             text-decoration: none; 
             display: flex;
@@ -88,15 +88,15 @@
             transform: scale(0.95);
         }
         .icon-btn svg {
-            width: clamp(20px, 4vmin, 28px);
-            height: clamp(20px, 4vmin, 28px);
+            width: clamp(18px, 3.5vmin, 28px);
+            height: clamp(18px, 3.5vmin, 28px);
             fill: currentColor;
         }
         
         #instruction-text { 
             grid-area: instruction;
             text-align: center; 
-            font-size: 2.2rem;
+            font-size: clamp(1.5rem, 4.5vmin, 2.8rem);
             font-weight: 700;
             color: #555;
         }
@@ -190,28 +190,28 @@
         /* --- Soru Tipi: Test (Quiz) --- */
         .quiz-container {
             width: 100%;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
         }
         .question {
-            font-size: 4.2rem;
+            font-size: clamp(3rem, 7vmin, 5rem);
             font-weight: 700;
             text-align: center;
             margin-bottom: 30px;
             color: #212529;
-            line-height: 1.5;
+            line-height: 1;
         }
         .options {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px; 
+            gap: clamp(15px, 1vmin, 20px);
         }
         .option {
-            width: 500px;
-            max-width: 100%;
+            width: 600px;
+            max-width: 95%;
             box-sizing: border-box;
-            padding: 10px 15px;
-            font-size: 2.8rem;
+            padding: 12px 18px;
+            font-size: clamp(2rem, 5vmin, 7rem);
             font-family: var(--font-arabic);
             background-color: var(--bg-light);
             border: 2px solid #ced4da;
@@ -262,7 +262,7 @@
             overflow-y: auto;
             flex-grow: 1;
             border: 1px solid #dee2e6;
-            border-radius: 8px;
+            border-radius: 15px;
             background: #fff;
         }
         .summary-item {
@@ -366,7 +366,7 @@
                     "progress buttons"
                     "instruction instruction";
                 grid-template-columns: 1fr auto; 
-                gap: 8px;
+                gap: 10px;
                 padding: 10px;
             }
 
@@ -374,9 +374,9 @@
             #instruction-text { font-size: 1.4rem; }
             #progress-display { font-size: 1.2rem; }
 
-            .options { gap: 8px; }
-            .option { font-size: 1.8rem; padding: 10px; }
-            .question { font-size: 2.2rem; margin-bottom: 20px; }
+            .options { gap: 15px; }
+            .option { font-size: 3rem; padding: 10px; }
+            .question { font-size: 2.2rem; margin-bottom: 30px; }
             
             .footer-nav { padding: 8px 15px; }
             .summary-question-text { font-size: 1.4rem; }
@@ -408,164 +408,243 @@
         .shake {
             animation: shake 0.5s ease-in-out;
         }
+        
+        /* --- YENİ BAŞLANGIÇ EKRANI STİLLERİ (SADECE TUŞ GÖRÜNÜR) --- */
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #e9ecef; /* Konteynerin dışındaki body rengiyle eşleşir */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20; 
+            text-align: center;
+        }
+        
+        /* İstenmeyen başlangıç yazılarını gizle */
+        #start-screen h1, #start-screen p { display: none; }
+        
+        #start-btn {
+            font-size: clamp(2rem, 5vmin, 3.5rem);
+            background: var(--success-color); 
+            color: #fff;
+            border: none;
+            padding: 15px 50px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--font-arabic);
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        #start-btn:hover {
+            background-color: #1e7e34;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Başlangıçta Ana Elemanları Gizle */
+        .header, .activity-area, .footer-nav {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s 0.5s, opacity 0.5s linear; 
+        }
 
+        /* Başlatıldıktan sonra göster */
+        .activity-started .header, 
+        .activity-started .activity-area, 
+        .activity-started .footer-nav {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.5s linear;
+        }
+       /* --- Tam Ekran --- */
+        #fullscreen-btn .icon-open { display: block; }
+        #fullscreen-btn .icon-close { display: none; }
+        body.fullscreen #fullscreen-btn .icon-open { display: none; }
+        body.fullscreen #fullscreen-btn .icon-close { display: block; }
+
+        body.fullscreen .activity-container {
+            width: 100vw;
+            height: 100vh;
+            max-height: 100vh;
+            max-width: 100vw;
+            border-radius: 0;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
 
-    <div class="activity-container">
-        <div class="header">
-            <div class="progress-container">
-                <div id="progress-display">........</div> 
-                <div class="progress-bar-container">
-                    <div id="progress-bar"></div>
-                </div>
-            </div>
-            
-            <div id="instruction-text">........</div>
-            
-            <div class="top-buttons">
-                <button id="fullscreen-btn" class="icon-btn" title="Tam Ekran">
-                    <svg class="icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M5 10h2V7h3V5H5v5zM14 5v2h3v3h2V5h-5zM5 19v-5h2v3h3v2H5zM14 19v-2h3v-3h2v5h-5z"/>
-                    </svg>
-                    <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
-                    </svg>
-                </button>
-
-                <a href="index.html" class="icon-btn" title="Ana Sayfa">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                    </svg>
-                </a>
-            </div>
-        </div> 
-        
-        <div class="activity-area" id="activity-area"></div>
-        
-        <div class="footer-nav" id="footer-nav">
-            <button id="prev-btn" class="nav-btn" title="السابق">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-                </svg>
-            </button>
-            
-            <button id="next-btn" class="nav-btn" title="التالي">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                     <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
-                </svg>
-            </button>
-        </div>
+<div class="activity-container" id="main-activity-container">
+    
+    <div id="start-screen">
+        <button id="start-btn" onclick="startActivity()">اِبْدَأْ</button>
     </div>
+    
+    <div class="header">
+        <div class="progress-container"> 
+            <span id="progress-display">0 / 0</span>
+            <div class="progress-bar-container">
+                <div id="progress-bar" style="width: 0%;"></div>
+            </div>
+        </div>
+        
+        <div id="instruction-text">........</div>
+        
+        <div class="top-buttons">
+            <button id="fullscreen-btn" class="icon-btn" title="Tam Ekran">
+                <svg class="icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M5 10h2V7h3V5H5v5zM14 5v2h3v3h2V5h-5zM5 19v-5h2v3h3v2H5zM14 19v-2h3v-3h2v5h-5z"/>
+                </svg>
+                <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+                </svg>
+            </button>
 
-    <script>
+            <a href="index.html" class="icon-btn" title="Ana Sayfa">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+            </a>
+        </div>
+    </div> 
+    
+    <div class="activity-area" id="activity-area"></div>
+    
+    <div class="footer-nav" id="footer-nav">
+        <button id="prev-btn" class="nav-btn" title="السابق">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+        </button>
+        
+        <button id="next-btn" class="nav-btn" title="التالي">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                 <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+    
+      <script>
         // --- ETKİNLİK VERİLERİ ---
-      const activitiesData = [
-    {
-        q: "في السَّنَة ............ فُصول.",
-        o: ["ثَلاثَة", "أَرْبَعَة", "خَمْسَة", "سِتَّة", "اِثْنان"], 
-        a: 1 
-    },
-    {
-        q: "في فَصْل الصَّيْف، الجَوّ ............ ‫.‬",
-        o: ["بَارِد", "مُمْطِر", "حَارّ", "مُثْلِج", "غَائِم"], 
-        a: 2 
-    },
-    {
-        q: "في فَصْل الخَريف يَنْزِلُ ............ ‫.‬",
-        o: ["الثَّلْج", "المَطَر", "الحَرّ", "الشَّمْس", "البَرَد"], 
-        a: 1 
-    },
-    {
-        q: "في فَصْل الشِّتاء يَسْقُطُ ............ ‫.‬",
-        o: ["الثَّلْج", "الأَوْراق", "المَطَر", "الغُبار", "الحَرّ"], 
-        a: 0 
-    },
-    {
-        q: "في ............ اِثْنا عَشَر شَهْرًا.",
-        o: ["الأُسْبوع", "اليَوْم", "السَّنَة", "الفَصْل", "القَرْن"], 
-        a: 2 
-    },
-    {
-        q: "في الأُسْبوع ............ أَيّام.",
-        o: ["خَمْسَة", "سِتَّة", "سَبْعَة", "عَشَرَة", "تِسْعَة"], 
-        a: 2 
-    },
-    {
-        q: "هُو يَلْبَسُ المِعْطَف في فَصْل ............ ‫.‬",
-        o: ["الصَّيْف", "الرَّبيع", "الشّتاء", "الخَريف", "العُطْلَة"], 
-        a: 2 
-    },
-    {
-        q: "تَتَساقَطُ ............ الشَّجَر في فَصْل الخَريف.",
-        o: ["أَغْصان", "أَوْراق", "جُذور", "ثِمار", "أَزْهار"], 
-        a: 1 
-    },
-    {
-        q: "تَلْبَسُ ............ عِنْدَما  تَشْعُرُ  يَداك  بِالبَرْد.",
-        o: ["القُفّاز", "النَّظّارَة", "الحِذاء", "القُبَّعَة", "الجَوْرَب"], 
-        a: 0 
-    },
-    {
-        q: "آخُذُ مَعي ............ في اليَوْم المُمْطِر.",
-        o: ["الكُرَة", "المِظَلَّة", "الحَقِيبَة", "القَلَم", "النَّظّارَة"], 
-        a: 1 
-    },
-    {
-        q: "لَوْ ............، أُريدُ كيلو مِن السُّكَّر.",
-        o: ["سَمَحْت", "شِئْت", "ذَهَبْت", "أَكَلْت", "قُلْت"], 
-        a: 0 
-    },
-    {
-        q: "هَلْ هُو ............ شَيْئًا آخَر؟",
-        o: ["يَذْهَبُ", "يَأْكُلُ", "يُريدُ", "يَنامُ", "يَشْرَبُ"], // Hepsi 'Y' ile başlıyor
-        a: 2 // Doğru cevap: يُريدُ (İstiyor)
-    },
-   {
-        q: "لَوْن القَميص 🟡 ............", // Gömlek (Eril) - Beyaz
-        o: ["أَحْمَر", "أَزْرَق", "أَبْيَض", "أَسْوَد", "أَصْفَر"], 
-        a: 4 // Doğru cevap: أَبْيَض (Beyaz - 5. sırada)
-    },
-    {
-        q: "لَوْن الفُسْتان 🟠 ............", // Elbise (Eril) - Turuncu
-        o: ["بُرْتُقالِيّ", "وَرْدِيّ", "أَبْيَض", "أَسْوَد", "أَصْفَر"], // İlk şıkkı 'Turuncu' yaptım
-        a: 0 // Doğru cevap: بُرْتُقالِيّ (Turuncu - 1. sırada)
-    },
-    {
-        q: "لَوْن القُبَّعَة ⚫ ............", // Şapka (Dişil/Müennes) - Siyah
-        o: ["أَزْرَق", "زَرْقاء", "أَحْمَر", "حَمْراء", "سَوْداء"], // Son şıkkı 'Siyah(d)' yaptım
-        a: 4 // Doğru cevap: سَوْداء (Siyah Müennes - 5. sırada)
-    },
-    {
-        q: "............ حَليمَة الشّاي وَالقَهْوَة.",
-        o: ["يَشْرَبُ", "تَشْرَبُ", "أَشْرَبُ", "نَشْرَبُ", "يَشْرَبْنَ"], 
-        a: 1 
-    },
-    {
-        q: "مَنْ غَشَّنا ............ مِنّا.",
-        o: ["فَلَيْسَ", "فَهُوَ", "لا", "ما", "أَلّا"], 
-        a: 0 
-    },
-    {
-        q: "بِماذا تَشْعُرُ في ............ الصَّيْف؟",
-        o: ["سَنَة", "فَصْل", "يَوْم", "أُسْبوع", "بَحْر"], 
-        a: 1 
-    },
-    {
-        q: "............ يَوْمًا فِي الأُسْبوع؟",
-        o: ["مَتى", "أَيْنَ", "كَيْفَ", "كَم", "مَنْ"], 
-        a: 3 
-    },
-    {
-        q: "لَوْن السَّيّارَة 🟢 ............", 
-        o: ["أَحْمَر", "حَمْراء", "أَخْضَر", "خَضْراء", "صَفْراء"], 
-        a: 3 // Doğru cevap: خَضْراء (Yeşil - Müennes)
-    }
-];
+       const activitiesData = [
+        // Düzeltilmiş Yapı: Tüm soruları 'quiz' anahtarı altına alıyoruz.
+        {
+            title: "Mevsimler ve İfadeler", // Opsiyonel, ama yapıyı korur
+            quiz: [
+                {
+                    q: "في السَّنَة ............ فُصول.",
+                    o: ["ثَلاثَة", "أَرْبَعَة", "خَمْسَة", "سِتَّة", "اِثْنان"], 
+                    a: 1 
+                },
+                {
+                    q: "في فَصْل الصَّيْف الجَوّ ............ ‫.‬",
+                    o: ["بَارِد", "مُمْطِر", "حَارّ", "مُثْلِج", "غَائِم"], 
+                    a: 2 
+                },
+                {
+                    q: "في فَصْل الخَريف يَنْزِلُ ............ ‫.‬",
+                    o: ["الثَّلْج", "المَطَر", "الحَرّ", "الشَّمْس", "البَرَد"], 
+                    a: 1 
+                },
+                {
+                    q: "في فَصْل الشِّتاء يَسْقُطُ ............ ‫.‬",
+                    o: ["الثَّلْج", "الأَوْراق", "المَطَر", "الغُبار", "الحَرّ"], 
+                    a: 0 
+                },
+                {
+                    q: "في ............ اِثْنا عَشَر شَهْرًا.",
+                    o: ["الأُسْبوع", "اليَوْم", "السَّنَة", "الفَصْل", "القَرْن"], 
+                    a: 2 
+                },
+                {
+                    q: "في الأُسْبوع ............ أَيّام.",
+                    o: ["خَمْسَة", "سِتَّة", "سَبْعَة", "عَشَرَة", "تِسْعَة"], 
+                    a: 2 
+                },
+                {
+                    q: "هُو يَلْبَسُ المِعْطَف في فَصْل ............ ‫.‬",
+                    o: ["الصَّيْف", "الرَّبيع", "الشّتاء", "الخَريف", "العُطْلَة"], 
+                    a: 2 
+                },
+                {
+                    q: "تَتَساقَطُ ............ الشَّجَر في فَصْل الخَريف.",
+                    o: ["ثَلْج", "أَوْراق", "فُسْتان", "قُبَّعَة", "قَميص"], 
+                    a: 1 
+                },
+                {
+                    q: "تَلْبَسُ ............ عِنْدَما  تَشْعُرُ  يَداك  بِالبَرْد.",
+                    o: ["القُفّاز", "النَّظّارَة", "الحِذاء", "القُبَّعَة", "الجَوْرَب"], 
+                    a: 0 
+                },
+                {
+                    q: "آخُذُ مَعي ............ في اليَوْم المُمْطِر.",
+                    o: ["الكُرَة", "المِظَلَّة", "الحَقِيبَة", "القَلَم", "النَّظّارَة"], 
+                    a: 1 
+                },
+                {
+                    q: "لَوْ ............، أُريدُ كيلو مِن السُّكَّر.",
+                    o: ["سَمَحْت", "شِئْت", "ذَهَبْت", "أَكَلْت", "قُلْت"], 
+                    a: 0 
+                },
+                {
+                    q: "هَلْ هُو ............ شَيْئًا آخَر؟",
+                    o: ["يَذْهَبُ", "يَخْرُجُ", "يُريدُ", "يَنامُ", "مُمْطِر"], 
+                    a: 2 
+                },
+               {
+                    q: "لَوْن القَميص 🟡 ............", 
+                    o: ["أَحْمَر", "أَزْرَق", "أَبْيَض", "أَسْوَد", "أَصْفَر"], 
+                    a: 4 
+                },
+                {
+                    q: "لَوْن الفُسْتان 🟠 ............", 
+                    o: ["بُرْتُقالِيّ", "وَرْدِيّ", "أَبْيَض", "أَسْوَد", "أَصْفَر"], 
+                    a: 0 
+                },
+                {
+                    q: "لَوْن القُبَّعَة ⚫ ............", 
+                    o: ["أَزْرَق", "زَرْقاء", "أَحْمَر", "حَمْراء", "سَوْداء"], 
+                    a: 4 
+                },
+                {
+                    q: "............ حَليمَة الشّاي وَالقَهْوَة.",
+                    o: ["يَشْرَبُ", "تَشْرَبُ", "أَشْرَبُ", "نَشْرَبُ", "يَشْرَبْنَ"], 
+                    a: 1 
+                },
+                {
+                    q: "مَنْ غَشَّنا ............ مِنّا.",
+                    o: ["فَلَيْسَ", "فَهُوَ", "لا", "ما", "أَلّا"], 
+                    a: 0 
+                },
+                {
+                    q: "بِماذا تَشْعُرُ في ............ الصَّيْف؟",
+                    o: ["سَنَة", "فَصْل", "يَوْم", "أُسْبوع", "بَحْر"], 
+                    a: 1 
+                },
+                {
+                    q: "............ يَوْمًا فِي الأُسْبوع؟",
+                    o: ["مَتى", "أَيْنَ", "كَيْفَ", "كَم", "مَنْ"], 
+                    a: 3 
+                },
+                {
+                    q: "لَوْن السَّيّارَة 🟢 ............", 
+                    o: ["أَحْمَر", "حَمْراء", "أَخْضَر", "خَضْراء", "صَفْراء"], 
+                    a: 3 
+                }
+            ]
+        }
+    ];
 
-// Bu satır 'allQuestions' hatasını çözer:
-const allQuestions = activitiesData;
+        // --- Elementler ---
+        // ... (Kalan JavaScript kodunuz değişmeden kalabilir)
 
         // --- Elementler ---
         const activityArea = document.getElementById('activity-area');
@@ -575,6 +654,9 @@ const allQuestions = activitiesData;
         const prevBtn = document.getElementById('prev-btn'); 
         const nextBtn = document.getElementById('next-btn'); 
         const footerNav = document.getElementById('footer-nav');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const startScreen = document.getElementById('start-screen');
+        const mainActivityContainer = document.getElementById('main-activity-container');
 
         // --- Ses ---
         let audioCtx = null;
@@ -588,7 +670,6 @@ const allQuestions = activitiesData;
         let allRounds = []; 
         let currentRoundIndex = 0;
         
-        // !!! YENİ EKLENEN DEĞİŞKEN (Hata Düzeltmesi İçin) !!!
         let autoNextTimer = null; 
 
         function initAudioContext() {
@@ -639,27 +720,19 @@ const allQuestions = activitiesData;
         }
 
         function prepareRounds() {
-            // ESKİ HATALI SATIR: const allQuestions = activitiesData[0].quiz;
-            // YENİ DOĞRU SATIR: activitiesData artık doğrudan soru listesidir.
-            
-            const preparedQuestions = activitiesData.map(q => ({
+            const allQuestions = activitiesData[0].quiz;
+            const preparedQuestions = allQuestions.map(q => ({
                 ...q,
                 isSolved: false,
                 selectedOptionText: null,
                 userIsCorrect: false 
             }));
 
-            // Soruları 10'arlı gruplara (Raundlara) bölüyoruz
+            // Soruları iki eşit tur için böler
             const round1 = preparedQuestions.slice(0, 10);
             const round2 = preparedQuestions.slice(10);
 
-            // Eğer 10'dan fazla soru varsa 2 raund yap, yoksa tek raund yap
-            if (round2.length > 0) {
-                allRounds = [round1, round2];
-            } else {
-                allRounds = [round1];
-            }
-
+            allRounds = [round1, round2];
             currentRoundIndex = 0;
         }
 
@@ -672,7 +745,6 @@ const allQuestions = activitiesData;
         }
 
         function loadActivity() {
-            // !!! YENİ: Sayfa yüklenirken eski zamanlayıcıyı temizle !!!
             clearTimeout(autoNextTimer);
 
             activityArea.innerHTML = '';
@@ -782,7 +854,6 @@ const allQuestions = activitiesData;
             
             nextBtn.disabled = false;
 
-            // !!! YENİ: Önceki zamanlayıcıyı temizle, sonra yenisini kur !!!
             clearTimeout(autoNextTimer);
             if (isCorrect) {
                 autoNextTimer = setTimeout(nextActivity, 1200);
@@ -795,6 +866,30 @@ const allQuestions = activitiesData;
             } else {
                 playSound('incorrect');
             }
+        }
+        
+        // --- BAŞLATMA FONKSİYONU ---
+        function startActivity() {
+            
+            // 1. Tam Ekranı Talep Et
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Tam ekran başlatılamadı: ${err.message}`);
+                });
+            }
+            
+            // 2. Başlangıç ekranını gizle ve ana içeriği göster
+            startScreen.style.display = 'none';
+            mainActivityContainer.classList.add('activity-started');
+
+            // 3. Ses bağlamını başlat ve ses çal
+            initAudioContext();
+            playSound('touch');
+
+            // 4. Oyunu Başlat
+            prepareRounds();
+            loadCurrentRound();
+            loadActivity();
         }
 
         function nextActivity() {
@@ -831,13 +926,9 @@ const allQuestions = activitiesData;
                 const qText = document.createElement('span');
                 qText.className = 'summary-question-text';
                 
-                // --- DEĞİŞİKLİK BAŞLANGICI ---
-                // 1. Standart rakamı (1, 2, 10...) Arapça rakama (١, ٢, ١٠...) çeviriyoruz
                 const arabicNum = (idx + 1).toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
                 
-                // 2. Metni bu yeni rakamla yazdırıyoruz
                 qText.textContent = `${arabicNum}. ${q.q}`;
-                // --- DEĞİŞİKLİK BİTİŞİ ---
                 
                 const icon = document.createElement('span');
                 icon.className = 'summary-icon';
@@ -903,18 +994,9 @@ const allQuestions = activitiesData;
         
         function restartGame() {
             playSound('touch');
-            scoreCorrect = 0;
-            scoreIncorrect = 0;
-            currentRoundIndex = 0; 
             
-            footerNav.style.display = 'flex';
-            
-            progressBar.style.width = '0%';
-            progressBar.style.backgroundColor = 'var(--accent-color)';
-            
-            prepareRounds();
-            loadCurrentRound();
-            loadActivity();
+            // Yeniden başlatmak için sayfayı yeniden yüklüyoruz.
+            window.location.reload(); 
         }
 
         function updateProgress() {
@@ -933,7 +1015,7 @@ const allQuestions = activitiesData;
         
         prevBtn.addEventListener('click', () => {
             playSound('touch');
-            clearTimeout(autoNextTimer); // !!! YENİ: Geri basılırsa otomatik geçişi iptal et
+            clearTimeout(autoNextTimer);
             if (currentActivityIndex > 0) {
                 currentActivityIndex--;
                 loadActivity();
@@ -942,7 +1024,7 @@ const allQuestions = activitiesData;
 
         nextBtn.addEventListener('click', () => {
              playSound('touch');
-             clearTimeout(autoNextTimer); // !!! YENİ: İleri basılırsa otomatik geçişi iptal et (çift atlamayı önler)
+             clearTimeout(autoNextTimer);
              
              const currentQuestion = activityQueue[currentActivityIndex];
              if (currentQuestion.isSolved) {
@@ -950,7 +1032,7 @@ const allQuestions = activitiesData;
              }
         });
 
-        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        
         fullscreenBtn.addEventListener('click', () => {
             playSound('touch');
             if (!document.fullscreenElement) {
@@ -963,27 +1045,34 @@ const allQuestions = activitiesData;
                 }
             }
         });
+        
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                document.body.classList.add('fullscreen');
+            } else {
+                document.body.classList.remove('fullscreen');
+            }
+        });
 
-      document.addEventListener('DOMContentLoaded', () => {
-            // Metin düzeltmeleri için yeni yapıya uygun döngü
+        document.addEventListener('DOMContentLoaded', () => {
+            // Dil çevirileri
             if(activitiesData && activitiesData.length > 0) {
-                activitiesData.forEach(q => {
-                    // q artık doğrudan soru objesidir {q: "...", o: [...], a: ...}
-                    if(q.o) {
-                        q.o = q.o.map(opt => opt.replace('tEktUb', 'تَكْتُبُ')
-                                                .replace('tEkOni', 'تَكُونِ')
-                                                .replace('yEzhEbu', 'يَذْهَبُ')
-                                                .replace('tEzhEbAn', 'تَذْهَبَان')
-                                                .replace('ElmustEşfA', 'المُسْتَشْفَى')
-                                                .replace('müderrisan', 'مُدَرِّسان')
-                                                );
+                activitiesData.forEach(round => {
+                    if(round.quiz) {
+                        round.quiz.forEach(q => {
+                            q.o = q.o.map(opt => opt.replace('tEktUb', 'تَكْتُبُ')
+                                                    .replace('tEkOni', 'تَكُونِ')
+                                                    .replace('yEzhEbu', 'يَذْهَبُ')
+                                                    .replace('tEzhEbAn', 'تَذْهَبَان')
+                                                    .replace('ElmustEşfA', 'المُسْتَشْفَى')
+                                                    .replace('müderrisan', 'مُدَرِّسان')
+                                                    );
+                        });
                     }
                 });
             }
             
-            prepareRounds();
-            loadCurrentRound();
-            loadActivity();
+            // Oyun, DOM yüklendiğinde otomatik başlamaz. Sadece startActivity() çağrıldığında başlar.
         });
     </script>
 </body>

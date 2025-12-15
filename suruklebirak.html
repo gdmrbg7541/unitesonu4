@@ -99,8 +99,8 @@
             flex-grow: 1;
             padding: 15px;
             display: flex;
-            flex-direction: column;
-            justify-content: center; 
+            flex-direction: column; /* İçeriği ve butonu dikey hizalamak için */
+            justify-content: space-between; /* İçerik ve buton arasına boşluk koymak için */
             align-items: center;     
             overflow: hidden; 
         }
@@ -110,7 +110,7 @@
             display: flex;
             flex-direction: row-reverse; /* Sağda kelimeler, solda kutular */
             width: 100%;  
-            height: 100%; 
+            flex-grow: 1; /* Tüm alanı kapla */
             gap: 15px;
         }
 
@@ -119,29 +119,28 @@
             display: grid;
             grid-template-columns: 1fr 1fr; /* 2 Sütun */
             gap: 15px;
-            flex: 1; /* Kalan tüm alanı kapla */
+            flex: 1; 
             overflow-y: auto; 
             padding: 5px;
         }
 
         .category-drop-zone {
-    background-color: var(--bg-light);
-    border: 2px solid var(--accent-color);
-    border-radius: 10px;
-    padding: 10px;
-    min-height: 150px;
-    
-    display: grid;
-    /* BURAYI DEĞİŞTİRİYORUZ: Her zaman 2 eşit sütun */
-    grid-template-columns: 1fr 1fr; 
-    grid-auto-rows: min-content;
-    
-    /* Kelimeler arası boşluğu sabitliyoruz */
-    gap: 8px; 
-    
-    align-content: start;
-    justify-items: center;
-}
+            background-color: var(--bg-light);
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 10px;
+            min-height: 150px;
+            
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            grid-auto-rows: min-content;
+            
+            gap: 8px; 
+            
+            align-content: start;
+            justify-items: center;
+            transition: border-color 0.3s; /* Dragover için ekledik */
+        }
 
         .category-drop-zone h3 {
             grid-column: 1 / -1; 
@@ -153,16 +152,15 @@
             width: 100%;
             text-align: center;
         }
-/* --- Tek kalan son kutuyu ortalama kodu --- */
-.drop-zones-container .category-drop-zone:last-child:nth-child(odd) {
-    grid-column: span 2;       /* 1. Adım: Tüm satırı (2 sütunu) kaplamasını söyle */
-    justify-self: center;      /* 2. Adım: Kendini o satırda ortala */
-    width: calc(50% - 7.5px);  /* 3. Adım: Genişliği, üstteki kutularla eşitle (Gap 15px olduğu için yarısını düştük) */
-}
+        /* --- Tek kalan son kutuyu ortalama kodu --- */
+        .drop-zones-container .category-drop-zone:last-child:nth-child(odd) {
+            grid-column: span 2;      
+            justify-self: center;     
+            width: calc(50% - 7.5px); 
+        }
         
         /* --- Sağ Taraf (Kelime Bankası - DARALTILDI & 3 SÜTUN) --- */
         .word-bank-container {
-            /* Genişlik Ayarı: Ekranın %30'u kadar olsun (Daraltıldı) */
             flex: 0 0 30%; 
             height: 100%; 
             background: #fff;
@@ -170,11 +168,11 @@
             border-radius: 10px;
             padding: 10px; 
             
-            /* CSS GRID: 3 SÜTUN */
+            /* CSS GRID: 2 SÜTUN */
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 3 Eşit Sütun */
-            align-content: start; /* Yukarı hizala */
-            gap: 8px; /* Kelimeler arası boşluk */
+            grid-template-columns: repeat(2, 1fr); 
+            align-content: start; 
+            gap: 8px; 
             
             overflow-y: auto; 
             box-sizing: border-box;
@@ -183,7 +181,7 @@
         .word-item {
             padding: 5px 2px;
             color: white;
-            font-size: 1.8rem; /* Font biraz küçültüldü sığması için */
+            font-size: 1.8rem; 
             font-weight: 700;
             border-radius: 8px; 
             cursor: grab;
@@ -191,9 +189,9 @@
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             
-            width: 100%; /* Sütun genişliğine uy */
+            width: 100%; 
             height: auto;
-            min-height: 50px; /* Yükseklik */
+            min-height: 50px; 
             
             display: flex;
             justify-content: center;
@@ -211,10 +209,23 @@
             box-shadow: none;
         }
         
+        /* --- KONTROL SONRASI STİLLER --- */
         .word-item.correct {
             cursor: default;
             background-color: var(--success-color) !important;
             filter: brightness(100%) !important;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--success-color);
+        }
+        
+        .word-item.incorrect {
+            background-color: var(--danger-color) !important;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
         }
 
         /* --- Geri Bildirim --- */
@@ -348,12 +359,16 @@
                  height: auto;
                  flex: 0 0 auto; 
                  max-height: 200px; 
-                 grid-template-columns: repeat(2, 1fr);
+                 grid-template-columns: repeat(3, 1fr);
             }
            .word-item {
-                font-size: 0.6rem; 
-                min-height: 60px;  
+                font-size: 1.3rem; 
+                min-height: 40px;  
                 width: 100%;
+            }
+             #check-button {
+                font-size: 1.8rem !important;
+                padding: 5px 20px !important;
             }
         }
 
@@ -376,7 +391,7 @@
             }
 
             .header {
-                padding: 2px 15px; /* Üst barı biraz daha daralttık */
+                padding: 2px 15px; 
                 height: 40px; 
             }
             
@@ -390,26 +405,24 @@
             }
 
             .categorize-container {
-                gap: 10px; /* Ana sütunlar arası boşluk */
+                gap: 10px; 
             }
 
             /* --- Sol Taraf (Kutular) --- */
             .drop-zones-container {
-                gap: 15px; /* İKİ KUTU ARASINDAKİ BOŞLUK ARTTIRILDI */
+                gap: 15px; 
                 padding: 0;
             }
 
             .category-drop-zone {
                 min-height: auto; 
-                padding: 8px; /* Kutu iç boşluğu arttırıldı */
+                padding: 8px; 
                 
-                /* Kelimeler arası boşluk (Hem yatay hem dikey) */
                 gap: 8px !important; 
                 
                 /* Mobilde kelimeler daha rahat sığsın diye genişliği esnettik */
-                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)) !important;
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
                 
-                /* İçerik azsa ortada dursun */
                 justify-content: center; 
             }
 
@@ -420,7 +433,7 @@
 
             /* --- Sağ Taraf (Kelime Bankası) --- */
             .word-bank-container {
-                flex: 0 0 22%; /* Alanı biraz daha daraltıp kutulara yer açtık */
+                flex: 0 0 25%; 
                 padding: 5px;
                 gap: 6px;
                 grid-template-columns: repeat(2, 1fr); 
@@ -430,6 +443,11 @@
                 font-size: 1.3rem; 
                 min-height: 32px;  
                 padding: 2px;
+            }
+            
+            #check-button {
+                font-size: 1.8rem !important;
+                padding: 5px 20px !important;
             }
 
             .drop-zones-container, .word-bank-container {
@@ -570,7 +588,26 @@
         </div>
 
         <div class="activity-area" id="activity-area">
+            <div id="categorize-area-content" style="flex-grow: 1; width: 100%; display: flex; flex-direction: column;">
+                </div>
+            
+            <div style="padding: 10px; border-top: 1px solid #ddd; width: 100%; display: flex; justify-content: center; flex-shrink: 0;">
+                <button id="check-button" onclick="checkAllDrops()" style="
+                    background-color: var(--accent-color); 
+                    color: white; 
+                    font-size: 2.5rem; 
+                    padding: 8px 30px; 
+                    border: none; 
+                    border-radius: 8px; 
+                    cursor: pointer; 
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                    font-family: var(--font-arabic);
+                    transition: background-color 0.2s;
+                ">
+                    تَحَقَّقْ
+                </button>
             </div>
+        </div>
 
         <div class="feedback-overlay" id="feedback-overlay">
             <span id="feedback-icon"></span>
@@ -587,18 +624,17 @@
             '#ff6b6b', '#fca311', '#90be6d', '#43aa8b', '#577590', '#f94144'
         ];
 
-        // --- Veri Bankası ---
         const activityDataBank = [
     // 1. TUR: MEVSİMLER, HAVA DURUMU VE KIYAFETLER (Ders 1 Odaklı)
     {
-        title: "صَنِّف الكَلِمات", 
-        categories: ["الفُصول", "حالَة الطَّقْس", "المَلابِس"], 
+        title: "صَنِّف الكَلِمات‫.‬", 
+        categories: ["فُصول", "حالَة الطَّقْس", "مَلابِس"], 
         words: [
             // Mevsimler
-            { w: "الرَّبيع", cat: "الفُصول" },   // İlkbahar
-            { w: "الصَّيْف", cat: "الفُصول" },   // Yaz
-            { w: "الخَريف", cat: "الفُصول" },   // Sonbahar
-            { w: "الشِّتاء", cat: "الفُصول" },   // Kış
+            { w: "الرَّبيع", cat: "فُصول" },   // İlkbahar
+            { w: "الصَّيْف", cat: "فُصول" },   // Yaz
+            { w: "الخَريف", cat: "فُصول" },   // Sonbahar
+            { w: "الشِّتاء", cat: "فُصول" },   // Kış
 
             // Hava Durumu
             { w: "مُشْمِس", cat: "حالَة الطَّقْس" }, // Güneşli
@@ -607,29 +643,29 @@
             { w: "حارّ", cat: "حالَة الطَّقْس" },    // Sıcak
 
             // Kıyafetler
-            { w: "مِعْطَف", cat: "المَلابِس" },    // Palto/Mont
-            { w: "قَميص", cat: "المَلابِس" },      // Gömlek
-            { w: "فُسْتان", cat: "المَلابِس" },    // Elbise
-            { w: "قُبَّعَة", cat: "المَلابِس" }    // Şapka
+            { w: "مِعْطَف", cat: "مَلابِس" },    // Palto/Mont
+            { w: "قَميص", cat: "مَلابِس" },      // Gömlek
+            { w: "فُسْتان", cat: "مَلابِس" },    // Elbise
+            { w: "قُبَّعَة", cat: "مَلابِس" }    // Şapka
         ]
     },
 
     // 2. TUR: RENKLER, SIFATLAR VE ALIŞVERİŞ EŞYALARI (Ders 2 Odaklı)
     {
-        title: "صَنِّف الكَلِمات", 
-        categories: ["الأَلْوان", "الصِّفات", "أَشْياء التَّسَوُّق"], 
+        title: "صَنِّف الكَلِمات‫.‬", 
+        categories: ["أَلْوان", "صِفات", "أَشْياء التَّسَوُّق"], 
         words: [
             // Renkler
-            { w: "أَحْمَر", cat: "الأَلْوان" },    // Kırmızı
-            { w: "أَزْرَق", cat: "الأَلْوان" },    // Mavi
-            { w: "أَسْوَد", cat: "الأَلْوان" },    // Siyah
-            { w: "أَبْيَض", cat: "الأَلْوان" },    // Beyaz
+            { w: "أَحْمَر", cat: "أَلْوان" },    // Kırmızı
+            { w: "أَزْرَق", cat: "أَلْوان" },    // Mavi
+            { w: "أَسْوَد", cat: "أَلْوان" },    // Siyah
+            { w: "أَبْيَض", cat: "أَلْوان" },    // Beyaz
 
             // Sıfatlar (Zıt Anlamlılar)
-            { w: "غالٍ", cat: "الصِّفات" },        // Pahalı
-            { w: "رَخيص", cat: "الصِّفات" },       // Ucuz
-            { w: "جَديد", cat: "الصِّفات" },       // Yeni
-            { w: "قَديم", cat: "الصِّفات" },       // Eski
+            { w: "غالٍ", cat: "صِفات" },        // Pahalı
+            { w: "رَخيص", cat: "صِفات" },       // Ucuz
+            { w: "جَديد", cat: "صِفات" },       // Yeni
+            { w: "قَديم", cat: "صِفات" },       // Eski
 
             // Alışveriş Eşyaları (Gıda ve Teknoloji Karışık)
             { w: "سُكَّر", cat: "أَشْياء التَّسَوُّق" }, // Şeker
@@ -650,7 +686,6 @@
         
         let audioCtx = null;
         let currentActivityIndex = 0; 
-        let totalWordsRemaining = 0;
         
         // --- SES FONKSİYONLARI ---
         function initAudioContext() {
@@ -725,10 +760,16 @@
 
         // --- ETKİNLİK YÜKLEYİCİ ---
         function loadActivity() {
-            activityArea.innerHTML = '';
+            const categorizeAreaContent = document.getElementById('categorize-area-content');
+            categorizeAreaContent.innerHTML = ''; // Sadece kategori içeriğini temizle
+            
             const data = activityDataBank[currentActivityIndex];
             instructionText.textContent = data.title; 
             feedbackOverlay.classList.remove('show', 'game-finished');
+            
+            // Kontrol butonunu etkinleştir
+            document.getElementById('check-button').style.display = 'block'; 
+
             buildCategorize(data); 
         }
         
@@ -756,7 +797,6 @@
             wordBank.id = 'word-bank-container'; 
             
             const shuffledWords = shuffle([...data.words]);
-            totalWordsRemaining = shuffledWords.length; 
             
             shuffledWords.forEach((wordData, index) => {
                 const wordItem = document.createElement('div');
@@ -772,13 +812,14 @@
             
             container.appendChild(dropZonesContainer);
             container.appendChild(wordBank);
-            activityArea.appendChild(container);
+            document.getElementById('categorize-area-content').appendChild(container);
             
             addDragDropListeners();
         }
 
         function addDragDropListeners() {
-            const draggables = document.querySelectorAll('.word-item');
+            // Sadece .correct olmayanları sürükleyebilir
+            const draggables = document.querySelectorAll('.word-item:not(.correct)'); 
             const containers = document.querySelectorAll('.category-drop-zone, .word-bank-container');
 
             draggables.forEach(draggable => {
@@ -793,7 +834,20 @@
             });
 
             containers.forEach(container => {
-                container.addEventListener('dragover', e => e.preventDefault());
+                container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    // Kutulara bırakma izni vermek için stil ekle
+                    if(container.classList.contains('category-drop-zone')) {
+                        container.style.border = '2px dashed #00b300';
+                    }
+                });
+                
+                container.addEventListener('dragleave', e => {
+                    // Stili geri al
+                    if(container.classList.contains('category-drop-zone')) {
+                        container.style.border = '2px solid var(--accent-color)';
+                    }
+                });
                 
                 container.addEventListener('drop', (e) => {
                     e.preventDefault();
@@ -801,45 +855,82 @@
                     const wordElement = document.getElementById(id);
                     const dropZone = e.target.closest('.category-drop-zone');
                     
-                    if (wordElement && dropZone) {
-                        checkCategoryDrop(wordElement, dropZone);
-                    } else if (wordElement && e.target.closest('.word-bank-container')) {
-                        e.target.closest('.word-bank-container').appendChild(wordElement);
+                    if (wordElement) {
+                         // Kelime bankasındaki kelimeyi taşı
+                        wordElement.classList.remove('mouse-dragging', 'incorrect');
+                    }
+
+                    if (dropZone) {
+                        dropZone.appendChild(wordElement); // Kategoriye taşı
+                        dropZone.style.border = '2px solid var(--accent-color)'; // Stili temizle
+                    } else if (e.target.closest('.word-bank-container')) {
+                        e.target.closest('.word-bank-container').appendChild(wordElement); // Bankaya geri taşı
                     }
                 });
             });
         }
         
-        function checkCategoryDrop(wordElement, dropZone) {
-            const zoneCategory = dropZone.dataset.category;
-            const wordCategory = wordElement.dataset.wordCat;
+        // --- KONTROL MEKANİZMASI: Hata bul ve geri döndür ---
+        function checkAllDrops() {
+            const dropZones = document.querySelectorAll('.category-drop-zone');
+            const wordBank = document.getElementById('word-bank-container');
+            let allCorrect = true;
+            let totalCorrected = 0;
 
-            if (zoneCategory === wordCategory) {
-                playSound('correct');
-                dropZone.appendChild(wordElement); 
-                wordElement.draggable = false;
-                wordElement.classList.add('correct'); 
-                wordElement.classList.remove('mouse-dragging'); 
+            dropZones.forEach(dropZone => {
+                const zoneCategory = dropZone.dataset.category;
+                const wordsInZone = dropZone.querySelectorAll('.word-item:not(.correct)'); 
                 
-                totalWordsRemaining--; 
-                
-                if (totalWordsRemaining === 0) {
-                    instructionText.textContent = "أَحْسَنْت! لَقَد أَكْمَلْتَ";
-                    feedbackOverlay.classList.add('game-finished');
-                    
-                    currentActivityIndex++;
-                    if (currentActivityIndex >= activityDataBank.length) {
-                        currentActivityIndex = 0; 
+                wordsInZone.forEach(wordElement => {
+                    const wordCategory = wordElement.dataset.wordCat;
+
+                    if (zoneCategory === wordCategory) {
+                        // DOĞRU YERLEŞİM: Yeşil yap ve kalıcı hale getir
+                        wordElement.classList.add('correct');
+                        wordElement.draggable = false;
+                        totalCorrected++;
+                    } else {
+                        // HATALI YERLEŞİM: Kırmızı yap, ses çal ve Kelime Bankasına geri döndür
+                        wordElement.classList.add('incorrect');
+                        allCorrect = false;
+                        
+                        // Hata animasyonu ve geri dönüş
+                        setTimeout(() => {
+                            wordElement.classList.remove('incorrect');
+                            wordBank.appendChild(wordElement);
+                        }, 500); // 0.5 saniye sonra geri dönsün
                     }
-                    
-                    showFeedback(true); 
-                }
-            } else {
+                });
+            });
+            
+            // Genel Geri Bildirim
+            if (!allCorrect) {
                 playSound('incorrect');
-                wordElement.classList.remove('mouse-dragging'); 
-                document.getElementById('word-bank-container').appendChild(wordElement);
+            } else if (totalCorrected > 0) {
+                playSound('correct');
             }
+            
+            // Tüm kelimeler doğru yerleştirildiyse oyunu bitir
+            const totalWordsCount = document.querySelectorAll('.word-item').length;
+            const correctWordsCount = document.querySelectorAll('.word-item.correct').length;
+            
+            if (correctWordsCount === totalWordsCount && totalWordsCount > 0) {
+                document.getElementById('check-button').style.display = 'none'; // Butonu gizle
+                instructionText.textContent = "أَحْسَنْت! لَقَد أَكْمَلْتَ";
+                feedbackOverlay.classList.add('game-finished');
+                
+                currentActivityIndex++;
+                if (currentActivityIndex >= activityDataBank.length) {
+                    currentActivityIndex = 0; 
+                }
+                
+                showFeedback(true); // Tamamlama geri bildirimi
+            }
+            
+             // Yeni kelimelerin sürüklenmesi için dinleyicileri yenile (Gerekiyorsa)
+            addDragDropListeners();
         }
+
 
         function showFeedback(isCorrect) {
             if (isCorrect) {

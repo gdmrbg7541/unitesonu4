@@ -25,7 +25,7 @@
             min-height: 100vh;
             margin: 0;
             overflow: hidden;
-            font-weight: 400;
+            
         }
 
         /* --- CİHAZ DÖNDÜRME UYARISI --- */
@@ -76,20 +76,24 @@
             .activity-container { display: none; } 
         }
 
-        /* --- Ana Etkinlik Alanı --- */
-        .activity-container {
-            position: relative;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            width: 90vw;
-            height: calc(90vw * 9 / 16);
-            max-height: 90vh;
-            max-width: calc(90vh * 16 / 9);
-        }
+     /* Bu sadeleştirilmiş versiyonu kullanmanız önerilir: */
+.activity-container {
+    position: relative;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    
+    /* GENİŞLİK: Ekranın %98'i, fakat maksimum %98vh'ye göre 16:9 oranını geçemez. */
+    width: 98vw; 
+    max-width: calc(98vh * 16 / 9); 
+    
+    /* YÜKSEKLİK: Genişliğe göre 16:9 oranı, fakat maksimum %98vh'yi geçemez. */
+    height: calc(98vw * 9 / 16); 
+    max-height: 98vh;
+}
         
         /* --- Header --- */
         .back-button-container {
@@ -236,7 +240,7 @@
     
     /* YAZI TİPİ AYARLARI */
     color: white;
-    font-size: 3.5rem; /* Çok büyük olursa mobilde taşar, 2.4 idealdir */
+    font-size: clamp(2.0rem, 3.5vw, 3.0rem);
     font-weight: 700;
     
     /* KRİTİK AYAR: Harf Kesilmesini Önleyen Kısım */
@@ -439,13 +443,47 @@
             </div>
         </div>
 
+       <div class="activity-container">
         <div class="activity-area" id="activity-area">
+            <div id="start-screen" style="
+                text-align: center;
+                font-family: var(--font-arabic);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                background: #fcfcfc;
+                padding: 20px;
+                box-sizing: border-box;
+            ">
+                <p style="font-size: 5rem; margin-bottom: 30px; color: var(--accent-color); font-weight: 700;">
+                    تَمْرِينُ تَرْتِيبِ الْجُمَل
+                </p>
+                <button id="start-button" style="
+                    font-size: 3rem;
+                    padding: 15px 40px;
+                    border: none;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    background-color: var(--success-color);
+                    color: white;
+                    font-weight: 700;
+                    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+                    transition: transform 0.2s;
+                    font-family: inherit;
+                ">
+                    إِبْدَأ (Başla)
+                </button>
             </div>
+            </div>
+    </div>
 
     </div>
 
     <script>
         // --- ETKİNLİK VERİLERİ ---
+// --- ETKİNLİK VERİLERİ (YENİLENMİŞ) ---
 const activitiesData = [
     {
         s: [
@@ -485,6 +523,8 @@ const activitiesData = [
     {
         s: [
             "الطَّقْس سَيَكون مُمْطِرًا يَوْم الجُمُعَة.",
+            "يَوْم الجُمُعَة الطَّقْس سَيَكون مُمْطِرًا.",
+            "يَوْم الجُمُعَة سَيَكون الطَّقْس مُمْطِرًا.",
             "سَيَكون الطَّقْس مُمْطِرًا يَوْم الجُمُعَة."
         ],
         w: ["الطَّقْس", "سَيَكون", "مُمْطِرًا", "يَوْم", "الجُمُعَة"]
@@ -522,7 +562,7 @@ const activitiesData = [
             "أُمّي تَلْبَسُ تَنّورَة طَويلَة دائِمًا.",
             "تَلْبَسُ أُمّي تَنّورَة طَويلَة دائِمًا.",
             "دائِمًا تَلْبَسُ أُمّي تَنّورَة طَويلَة.",
-            "دائِمًا أُمّي تَلْبَسُ تَنّورَة طَويلَة."‪,‬
+            "دائِمًا أُمّي تَلْبَسُ تَنّورَة طَويلَة." ,
             "أُمّي تَلْبَسُ دائِمًا تَنّورَة طَويلَة.",
         ],
         w: ["أُمّي", "تَلْبَسُ", "تَنّورَة", "طَويلَة", "دائِمًا"]
@@ -546,7 +586,7 @@ const activitiesData = [
             "في إِسْطَنْبول أنا أَعيشُ."
         ],
         w: ["أنا", "أَعيشُ", "في", "إِسْطَنْبول"]
-    }, 
+    },
     {
         s: [
             "في فَصْل الصَّيْف الجَوّ مُشْمِس",
@@ -574,14 +614,14 @@ const activitiesData = [
             "أُريدُ مِن المِلْح عُلْبَة واحِدَة"
         ],
         w: ["أُريدُ", "عُلْبَة", "واحِدَة", "مِن", "المِلْح"]
-    }, 
+    },
     {
         s: [
             "السَّيّارَة السَّوْداء أَصْغَر مِن السَّيّارَة الحَمْراء",
-            "السَّيّارَة الحَمْراء أَصْغَر مِن السَّيّارَة السَّوْداء" // BURADAKİ BOŞLUK HATASI DÜZELTİLDİ
+            "السَّيّارَة الحَمْراء أَصْغَر مِن السَّيّارَة السَّوْداء"
         ],
         w: ["السَّيّارَة", "السَّوْداء", "أَصْغَر", "مِن", "السَّيّارَة", "الحَمْراء"]
-    }, 
+    },
     {
         s: [
             "مَنْ غَشَّنَا فَلَيْسَ مِنَّا"
@@ -983,6 +1023,22 @@ const activitiesData = [
             createActivityQueue(); 
             loadActivity(); 
         }
+        // --- Başlangıç Fonksiyonu ---
+function startGame() {
+    // 1. Ekranı Tam Ekran Moduna Geçir
+    toggleFullScreen();
+    
+    // 2. Başlangıç ekranını gizle (Artık aktivite alanı içindeki tek öğe gizlenecek)
+    const startScreen = document.getElementById('start-screen');
+    if (startScreen) startScreen.style.display = 'none';
+
+    // 3. Etkinlikleri yükle
+    createActivityQueue(); 
+    loadActivity();
+}
+
+// toggleFullScreen fonksiyonu zaten mevcuttur, sadece referans:
+// function toggleFullScreen() { ... }
 
         // --- İlerleme Güncelleme ---
         function updateProgress() {

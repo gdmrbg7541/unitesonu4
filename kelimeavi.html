@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelime Avı</title>
-    
+    <title>قِيَمي - البحث عن الكلمات</title>
     <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
@@ -16,22 +15,49 @@
             --bg-light: #f8f9fa;
             --font-arabic: 'Markazi Text', 'Noto Naskh Arabic', 'Tahoma', 'Arial', sans-serif;
             
-            /* Varsayılan (Masaüstü/Yatay) boyutlar */
+            /* GÜNCELLEME: Varsayılan (Masaüstü) boyutlar. JS bunları mobil için ezecek. */
             --grid-size-cols: 10;
-            --grid-size-rows: 10; /* Kare Izgara */
+            --grid-size-rows: 8;
         }
 
-        body {
-            font-family: var(--font-arabic);
-            background-color: #e9ecef;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            font-weight: 400;
-        }
+        /* body etiketi etrafındaki boşlukları tamamen sıfırlamak için */
+    body {
+        font-family: var(--font-arabic);
+        background-color: #e9ecef;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        width: 100vw; /* Ekran genişliğinin tamamını kapla */
+        margin: 0;
+        padding: 0; /* Yeni Eklendi: Sayfa kenarında boşluk bırakma */
+        overflow: hidden;
+        font-size: 1.1rem; /* ... diğer font ayarları ... */
+    }
+
+    /* Ana Oyun Konteyneri (#game-container) */
+    #game-container {
+        /* Başlangıçta neredeyse tam ekran */
+        width: 98vw;  
+        height: 98vh; 
+        max-width: none; /* Yatay kısıtlamayı kaldır */
+        
+        /* Orijinal stil kurallarını koru */
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* Tam Ekran Moduna Geçildiğinde Ekstra Boşlukları Kaldır */
+    body.fullscreen #game-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+    }
 
         /* --- Ana Etkinlik Alanı --- */
         .activity-container {
@@ -147,7 +173,10 @@
             flex-grow: 1;
             height: 100%;
             max-height: 100%; 
+            
+            /* GÜNCELLEME: En/boy oranı artık CSS değişkenlerinden dinamik olarak geliyor */
             aspect-ratio: var(--grid-size-cols) / var(--grid-size-rows); 
+            
             display: grid;
             grid-template-columns: repeat(var(--grid-size-cols), 1fr);
             grid-template-rows: repeat(var(--grid-size-rows), 1fr);
@@ -166,18 +195,12 @@
             justify-content: center;
             align-items: center;
             font-size: 4.5vmin; 
-            font-weight: 400;
+            font-weight: 400; /* Izgara harfleri normal (ince) */
             color: #333;
             cursor: pointer;
             border-bottom: 3px solid #999; 
             border-left: 3px solid #999; 
             box-sizing: border-box;
-            
-            /* --- DÜZELTME: ARAPÇA HARF HİZALAMA --- */
-            /* Arapça harflerin tabanı biraz aşağıda olduğu için görsel olarak 
-               yukarı itmek gerekir. */
-            padding-bottom: 1.2vmin; 
-            line-height: 1;
         }
         #puzzle-grid-container .grid-cell:nth-child(var(--grid-size-cols)n) {
             border-right: none;
@@ -186,6 +209,7 @@
             border-top: none;
         }
 
+        
         /* Seçim Vurguları */
         .grid-cell.selecting {
             background-color: #b3d4fc; 
@@ -196,6 +220,7 @@
             color: white;
             transition: background-color 0.3s ease;
         }
+
 
         /* --- Kelime Listesi Stilleri --- */
         #word-list-container {
@@ -222,17 +247,11 @@
 
         .word-list-item {
             font-size: 1.8rem; 
-            font-weight: 700;
+            font-weight: 700; /* Kelime listesi kalın */
             color: #555;
             transition: all 0.3s ease;
             border-left: 1px solid #ccc;
             padding-left: 15px;
-            
-            /* --- DÜZELTME: LİSTE HİZALAMA --- */
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            line-height: 1.2;
         }
         
         .word-list-item:last-child {
@@ -246,7 +265,7 @@
         }
 
 
-        /* --- Geri Bildirim Ekranı --- */
+        /* --- Geri Bildirim Ekranı (✔ / ❌) --- */
         .feedback-overlay {
             position: absolute;
             top: 0;
@@ -285,6 +304,9 @@
             transform: rotate(-90deg);
             background-color: #f0f0f0;
         }
+        .feedback-overlay.show #replay-button-end {
+            display: block;
+        }
         
         /* --- Ana Konteynırın Tam Ekran Davranışı --- */
         body.fullscreen .activity-container {
@@ -296,120 +318,69 @@
             box-shadow: none;
         }
 
-        /* --- BAŞLANGIÇ EKRANI (Start Screen) --- */
-        #start-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #0d6efd; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999; 
-            color: white;
-            transition: opacity 0.5s ease;
-        }
 
-        #start-btn {
-            background-color: #ffc107;
-            color: #333;
-            border: none;
-            padding: 15px 40px;
-            font-size: 2.5rem;
-            font-family: var(--font-arabic);
-            font-weight: 700;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #d39e00;
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
+        /* --- Mobil Düzen --- */
+        @media (orientation: portrait) {
+            .activity-container {
+                width: 95vw;
+                height: calc(95vw * 16 / 9); /* 9:16 */
+                max-height: 95vh;
+                max-width: calc(95vh * 9 / 16); /* 9:16 */
+            }
 
-        #start-btn:active {
-            transform: translateY(5px);
-            box-shadow: 0 0 0 #d39e00;
-        }
-        
-        /* --- DÖNDÜRME UYARISI (Dikey Mod Engeli) --- */
-        #rotate-message {
-            display: none; 
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #212529;
-            z-index: 10000; 
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-        }
+            .header {
+                grid-template-columns: auto 1fr auto; 
+                gap: 10px;
+                padding: 10px 15px;
+            }
+            #instruction-text { font-size: 1.4rem; }
+            .icon-button { width: 45px; height: 45px; }
+            
+            #fullscreen-btn { width: 45px; height: 45px; }
 
-        .phone-icon {
-            width: 60px;
-            height: 100px;
-            border: 3px solid white;
-            border-radius: 8px;
-            position: relative;
-            margin-bottom: 20px;
-            animation: rotate-phone 2s infinite ease-in-out;
-        }
-        
-        .phone-icon::after {
-            content: '';
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background: white;
-            border-radius: 50%;
-        }
-
-        @keyframes rotate-phone {
-            0%, 10% { transform: rotate(0deg); }
-            40%, 60% { transform: rotate(-90deg); }
-            90%, 100% { transform: rotate(-90deg); }
-        }
-
-        /* --- MOBİL VE DİKEY ALGILAMA --- */
-        @media only screen and (orientation: portrait) {
-            #rotate-message { display: flex; }
-            .activity-container { display: none !important; }
-            #start-screen { display: none; }
-        }
-        
-        @media only screen and (orientation: landscape) and (max-height: 500px) {
-             .header { padding: 5px 15px; }
-             #instruction-text { font-size: 1.5rem; }
-             .icon-button { width: 35px; height: 35px; font-size: 1.5rem; }
-             .activity-area { padding: 5px; gap: 5px; }
-             #word-list-container { padding: 5px; }
-             .word-list-item { font-size: 1.4rem; padding-left: 10px; }
-             .activity-container {
-                height: 95vh;
-                width: calc(95vh * 16 / 9);
-             }
+            .activity-area {
+                gap: 10px;
+            }
+            
+            #word-list-container {
+                flex-basis: auto; 
+                flex-shrink: 1;
+                max-height: 120px; 
+            }
+            #word-list {
+                gap: 5px 15px;
+            }
+            .word-list-item { 
+                font-size: 1.7rem; 
+                padding-left: 10px;
+            }
+            
+            #puzzle-grid-container {
+                flex-grow: 1; 
+                width: 100%;
+                height: auto;
+                /* GÜNCELLEME: En/boy oranı artık CSS değişkenlerinden dinamik olarak geliyor */
+                aspect-ratio: var(--grid-size-cols) / var(--grid-size-rows);
+                max-height: none; 
+            }
+            
+            .grid-cell {
+                 /* GÜNCELLEME: Yazı tipi boyutu ızgara boyutuna daha iyi uyması için ayarlandı */
+                 font-size: 7.5vmin; 
+            }
+            
+            /* --- Mobil (Dikey) Ekran Davranışı --- */
+            body.fullscreen .activity-container {
+                width: 100vw;
+                height: calc(100vw * 16 / 9);
+                max-height: 100vh;
+                max-width: calc(100vh * 9 / 16);
+            }
         }
 
     </style>
 </head>
 <body>
-
-    <div id="rotate-message">
-        <div class="phone-icon"></div>
-        <h2>يرجى تدوير الجهاز</h2>
-        <p>Lütfen telefonu yan çevirin</p>
-    </div>
-
-    <div id="start-screen">
-        <button id="start-btn" onclick="startAndFullscreen()">اِبْدَأْ </button>
-    </div>
 
     <div class="activity-container">
         
@@ -422,7 +393,7 @@
 
             <div class="header-button-container right">
                 <button id="fullscreen-btn">
-                    <svg class="icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <svg class="icon-open" xmlns="http://www.w.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M5 10h2V7h3V5H5v5zM14 5v2h3v3h2V5h-5zM5 19v-5h2v3h3v2H5zM14 19v-2h3v-3h2v5h-5z"/>
                     </svg>
                     <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -458,548 +429,591 @@
     </div>
 
 <script>
-    // --- Kelime Verisi ---
-    const colors = ['#dc3545', '#fd7e14', '#ffc107', '#28a745', '#20c997', '#0d6efd', '#6f42c1', '#e83e8c'];
-    
-    // TÜM SEVİYELER VERİSİ 
-    const allLevelsData = [
-        // Seviye 1: Mevsimler ve Hava Durumu
-        [
-            { word: 'صَيْف', color: colors[0], emoji: '☀️' },    
-            { word: 'شِتَاء', color: colors[1], emoji: '❄️' },    
-            { word: 'رَبِيع', color: colors[2], emoji: '🌸' },    
-            { word: 'خَرِيف', color: colors[3], emoji: '🍂' },    
-            { word: 'مَطَر', color: colors[4], emoji: '🌧️' },    
-            { word: 'ثَلْج', color: colors[5], emoji: '☃️' },    
-            { word: 'مُشْمِس', color: colors[6], emoji: '😎' },   
-            { word: 'حَارّ', color: colors[7], emoji: '🌡️' }     // Şeddeli
+        // --- Kelime Verisi ---
+        const colors = ['#dc3545', '#fd7e14', '#ffc107', '#28a745', '#20c997', '#0d6efd', '#6f42c1', '#e83e8c'];
+        
+        // GÜNCELLEME: Seviyeler 'Masaüstü' ve 'Mobil' olarak ikiye ayrıldı
+        
+        // MASAÜSTÜ SEVİYELERİ (Orijinal 10x8 Izgara için)
+        // MASAÜSTÜ SEVİYELERİ (Her biri 6 Kelime)
+        // Dosya 1 (Meslekler/Akrabalar) ve Dosya 2 (Güzel Davranışlar) içeriğine göre düzenlenmiştir.
+        const desktopLevels = [
+           [
+            { word: 'صيف', color: colors[0], emoji: '☀️' },    
+            { word: 'شتاء', color: colors[1], emoji: '❄️' },    
+            { word: 'ربيع', color: colors[2], emoji: '🌸' },    
+            { word: 'خريف', color: colors[3], emoji: '🍂' },    
+            { word: 'مطر', color: colors[4], emoji: '🌧️' },    
+            { word: 'ثلج', color: colors[5], emoji: '☃️' },    
+            { word: 'مشمس', color: colors[6], emoji: '😎' },   
+            { word: 'حارّ', color: colors[7], emoji: '🌡️' }     // Şeddeli
         ],
         // Seviye 2: Kıyafetler ve Aksesuarlar
         [
-            { word: 'مِعْطَف', color: colors[0], emoji: '🧥' },   
-            { word: 'قَمِيص', color: colors[1], emoji: '👕' },   
-            { word: 'فُسْتَان', color: colors[2], emoji: '👗' },   
-            { word: 'قُبَّعَة', color: colors[3], emoji: '🧢' },   // Şeddeli
-            { word: 'مِظَلَّة', color: colors[4], emoji: '☂️' },   // Şeddeli
-            { word: 'قُفَّاز', color: colors[5], emoji: '🧤' },   // Şeddeli
-            { word: 'وِشَاح', color: colors[6], emoji: '🧣' },   
-            { word: 'تَنُّورَة', color: colors[7], emoji: '👚' }   // Şeddeli
+            { word: 'معطف', color: colors[0], emoji: '🧥' },   
+            { word: 'قميص', color: colors[1], emoji: '👕' },   
+            { word: 'فستان', color: colors[2], emoji: '👗' },   
+            { word: 'قبّعة', color: colors[3], emoji: '🧢' },   // Şeddeli
+            { word: 'مظلّة', color: colors[4], emoji: '☂️' },   // Şeddeli
+            { word: 'قفّاز', color: colors[5], emoji: '🧤' },   // Şeddeli
+            { word: 'وشاح', color: colors[6], emoji: '🧣' },   
+            { word: 'تنّورة', color: colors[7], emoji: '👚' }   // Şeddeli
         ],
         // Seviye 3: Alışveriş ve Eşyalar
         [
-            { word: 'سُوق', color: colors[0], emoji: '🏪' },    
-            { word: 'بَائِع', color: colors[1], emoji: '👨‍💼' },   
-            { word: 'نُقُود', color: colors[2], emoji: '💵' },   
-            { word: 'بِطَاقَة', color: colors[3], emoji: '💳' },   
-            { word: 'سِعْر', color: colors[4], emoji: '🏷️' },    
-            { word: 'حَاسُوب', color: colors[5], emoji: '💻' },  
-            { word: 'جَوَّال', color: colors[6], emoji: '📱' },   // Şeddeli
-            { word: 'بَقَّالَة', color: colors[7], emoji: '🛒' }   // Şeddeli
+            { word: 'سوق', color: colors[0], emoji: '🏪' },    
+            { word: 'بائع', color: colors[1], emoji: '👨‍💼' },   
+            { word: 'نقود', color: colors[2], emoji: '💵' },   
+            { word: 'بطاقة', color: colors[3], emoji: '💳' },   
+            { word: 'سعر', color: colors[4], emoji: '🏷️' },    
+            { word: 'حاسوب', color: colors[5], emoji: '💻' },  
+            { word: 'جوّال', color: colors[6], emoji: '📱' },   // Şeddeli
+            { word: 'بقّالة', color: colors[7], emoji: '🛒' }   // Şeddeli
         ]
     ];
-
-    const arabicLetters = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي'.split('');
-    
-    // SİMETRİ AYARI: 10x10 Kare Izgara
-    const desktopGridCols = 10;
-    const desktopGridRows = 10; 
-    
-    let activeGridCols;
-    let activeGridRows;
-    let activeLevelSet;
-
-    // --- Gerekli Elementler ---
-    const gridContainer = document.getElementById('puzzle-grid-container');
-    const wordListElement = document.getElementById('word-list');
-    const instructionText = document.getElementById('instruction-text');
-    const feedbackOverlay = document.getElementById('feedback-overlay');
-    const feedbackIcon = document.getElementById('feedback-icon');
-    
-    // --- Ses Değişkenleri ---
-    let audioCtx = null;
-
-    // --- Durum Değişkenleri ---
-    let grid = []; 
-    let gridCells = [];
-    let currentLevel = 0; 
-    let processedLevelData = []; 
-    let foundWords = [];
-    let isSelecting = false;
-    let selectionStart = null;
-    let currentSelection = [];
-    
-    function isMobileDevice() {
-        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    }
-
-    // --- Arapça Kelime İşleme ---
-    function processArabicWord(rawWord) {
-        const vowelsRegex = /[\u064B-\u0650\u0652\u0670]/g;
-        
-        let listDisplay = rawWord.replace(vowelsRegex, '');
-
-        let gridSequence = [];
-        for (let i = 0; i < rawWord.length; i++) {
-            const char = rawWord[i];
-            
-            if (char === '\u0651') { 
-                if (gridSequence.length > 0) {
-                    gridSequence.push(gridSequence[gridSequence.length - 1]);
-                }
-            } else if (vowelsRegex.test(char)) {
-                continue;
-            } else {
-                gridSequence.push(char);
-            }
-        }
-
-        return {
-            original: rawWord,
-            display: listDisplay,    
-            gridChars: gridSequence  
-        };
-    }
-
-    function startAndFullscreen() {
-        const startScreen = document.getElementById('start-screen');
-        const el = document.documentElement;
-        initAudioContext();
-
-        if (el.requestFullscreen) {
-            el.requestFullscreen().catch(err => console.log(err));
-        } else if (el.mozRequestFullScreen) {
-            el.mozRequestFullScreen();
-        } else if (el.webkitRequestFullscreen) {
-            el.webkitRequestFullscreen();
-        } else if (el.msRequestFullscreen) {
-            el.msRequestFullscreen();
-        }
-
-        startScreen.style.opacity = '0';
-        setTimeout(() => {
-            startScreen.style.display = 'none';
-        }, 500);
-    }
-
-    // --- SES ---
-    function initAudioContext() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-    }
-    
-    function playSound(type) {
-        if (!audioCtx) return; 
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        const now = audioCtx.currentTime;
-
-        if (type === 'select') { 
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(400, now);
-            gainNode.gain.setValueAtTime(0.05, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
-            oscillator.start(now);
-            oscillator.stop(now + 0.1);
-        } else if (type === 'correct') {
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(440, now);
-            oscillator.frequency.linearRampToValueAtTime(880, now + 0.2);
-            gainNode.gain.setValueAtTime(0.15, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
-            oscillator.start(now);
-            oscillator.stop(now + 0.2);
-        } else if (type === 'incorrect') {
-            oscillator.type = 'triangle'; 
-            oscillator.frequency.setValueAtTime(200, now);
-            oscillator.frequency.linearRampToValueAtTime(100, now + 0.2);
-            gainNode.gain.setValueAtTime(0.1, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
-            oscillator.start(now);
-            oscillator.stop(now + 0.2);
-        }
-    }
-    
-    // --- OYUN KURULUMU ---
-
-    function initializeGame() {
-        const rawLevelData = activeLevelSet[currentLevel];
-        
-        processedLevelData = rawLevelData.map(item => {
-            const processed = processArabicWord(item.word);
-            return {
-                id: item.word, 
-                color: item.color,
-                emoji: item.emoji,
-                displayWord: processed.display, 
-                gridTarget: processed.gridChars 
-            };
-        });
-
-        foundWords = [];
-        grid = [];
-        gridCells = [];
-        gridContainer.innerHTML = '';
-        wordListElement.innerHTML = '';
-        feedbackOverlay.classList.remove('show');
-        
-        instructionText.textContent = "اِبْحَثْ عَن الكَلِمات‫.‬";
-
-        renderWordList();
-        
-        for (let r = 0; r < activeGridRows; r++) {
-            grid[r] = [];
-            gridCells[r] = [];
-            for (let c = 0; c < activeGridCols; c++) {
-                grid[r][c] = null;
-            }
-        }
-
-        placeWords();
-        fillEmptyCells();
-        renderGrid();
-    }
-
-    function renderWordList() {
-        processedLevelData.forEach(data => {
-            const li = document.createElement('li');
-            li.className = 'word-list-item';
-            li.id = `word-item-${data.id.replace(/\s/g, '-')}`; 
-            li.textContent = `${data.emoji} ${data.displayWord}`;
-            li.dataset.color = data.color; 
-            wordListElement.appendChild(li);
-        });
-    }
-    
-    function placeWords() {
-        // YÖNLER (Ters ve Düz)
-        const directions = [
-            { dr: 0, dc: 1 },   // Yatay (Sağdan Sola)
-            { dr: 1, dc: 0 },   // Dikey (Yukarıdan Aşağı)
-            { dr: 1, dc: 1 },   // Çapraz (Sağ Üst -> Sol Alt)
-            { dr: -1, dc: 0 }   // Dikey Ters (Aşağıdan Yukarı) - SİMETRİ İÇİN
+        // MOBİL SEVİYELER
+        const mobileLevels = [
+            // Mobil 1: Kimlik ve Karakter
+            [
+                { word: 'لسان', color: colors[0], emoji: '👅' },   
+                { word: 'عين', color: colors[1], emoji: '👁️' },   
+                { word: 'أذن', color: colors[2], emoji: '👂' },   
+                { word: 'أسنان', color: colors[3], emoji: '🦷' }
+            ],
+            // Mobil 2: Zıtlıklar
+            [
+                { word: 'صداع', color: colors[0], emoji: '🤦' },   
+                { word: 'زكام', color: colors[1], emoji: '🤧' },   
+                { word: 'مغص', color: colors[2], emoji: '🤢' },   
+                { word: 'حرارة', color: colors[3], emoji: '🌡️' }
+            ],
+            // Mobil 3: Kariyer ve Hedefler
+            [
+                { word: 'سباحة', color: colors[4], emoji: '🏊' }, 
+                { word: 'كرة', color: colors[5], emoji: '⚽' },   
+                { word: 'سلّة', color: colors[6], emoji: '🏀' },   
+                { word: 'عطلة', color: colors[7], emoji: '🏖️' }
+            ],
+            // Mobil 4: Sanat ve Kültür
+            [
+                { word: 'رسم', color: colors[2], emoji: '🎨' },   
+                { word: 'قراءة', color: colors[3], emoji: '📖' }, 
+                { word: 'موسيقى', color: colors[4], emoji: '🎵' }, 
+                { word: 'مسرح', color: colors[5], emoji: '🎭' }
+            ]
         ];
 
-        const sortedWords = [...processedLevelData].sort((a, b) => b.gridTarget.length - a.gridTarget.length);
+        
+        const arabicLetters = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي'.split('');
+        
+        // GÜNCELLEME: Izgara boyutları dinamik olarak ayarlanacak
+        const desktopGridCols = 10;
+        const desktopGridRows = 8;
+        const mobileGridCols = 8;
+        const mobileGridRows = 8;
+        
+        let activeGridCols;
+        let activeGridRows;
+        let activeLevelSet;
+        
+        // --- YENİ EKLENEN FONKSİYONLAR ---
 
-        for (const data of sortedWords) {
-            let placed = false;
-            let attempts = 0;
-            const wordChars = data.gridTarget; 
-            
-            while (!placed && attempts < 150) {
-                attempts++;
-                const dir = directions[Math.floor(Math.random() * directions.length)];
-                const r = Math.floor(Math.random() * activeGridRows);
-                const c = Math.floor(Math.random() * activeGridCols);
-
-                if (canPlaceWord(wordChars, r, c, dir)) {
-                    for (let i = 0; i < wordChars.length; i++) {
-                        grid[r + i * dir.dr][c + i * dir.dc] = wordChars[i];
+        // Şedde (ّ) işaretini iki harfe dönüştüren fonksiyon
+        // Örnek: 'مدرّس' -> 'مدررس' (2 harfe açar)
+        function unShedda(word) {
+            let newWord = '';
+            for (let i = 0; i < word.length; i++) {
+                const char = word[i];
+                if (char === 'ّ') { // Şedde karakteri
+                    // Bir önceki harfi tekrar ekle
+                    if (newWord.length > 0) {
+                        const prevChar = newWord[newWord.length - 1];
+                        newWord += prevChar;
                     }
-                    placed = true;
+                } else {
+                    newWord += char;
                 }
             }
+            // Kelimenin başındaki şeddeyi (eğer varsa) ve kelimenin sonundaki şeddeyi temizler.
+            return newWord.replace('ّ', ''); 
         }
-    }
-    
-    function canPlaceWord(wordChars, r, c, dir) {
-        for (let i = 0; i < wordChars.length; i++) {
-            const newRow = r + i * dir.dr;
-            const newCol = c + i * dir.dc;
 
-            if (newRow >= activeGridRows || newCol >= activeGridCols || newRow < 0 || newCol < 0) {
-                return false;
-            }
-            const cell = grid[newRow][newCol];
-            if (cell !== null && cell !== wordChars[i]) { 
-                return false;
-            }
+        // Şedde dönüşümünü tüm kelime setlerine uygulayan fonksiyon
+        function preprocessLevels(levels) {
+            return levels.map(level => 
+                level.map(data => ({
+                    ...data,
+                    // Orijinal kelimeyi (word) ve şeddesiz halini (processedWord) tut
+                    processedWord: unShedda(data.word) 
+                }))
+            );
         }
-        return true;
-    }
+        // --- YENİ EKLENEN FONKSİYONLAR BİTİŞİ ---
 
-    function fillEmptyCells() {
-        for (let r = 0; r < activeGridRows; r++) {
-            for (let c = 0; c < activeGridCols; c++) {
-                if (grid[r][c] === null) {
-                    grid[r][c] = arabicLetters[Math.floor(Math.random() * arabicLetters.length)];
-                }
-            }
-        }
-    }
-
-    function renderGrid() {
-        gridContainer.innerHTML = ''; 
+        // --- Gerekli Elementler ---
+        const gridContainer = document.getElementById('puzzle-grid-container');
+        const wordListElement = document.getElementById('word-list');
+        const instructionText = document.getElementById('instruction-text');
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+        const feedbackIcon = document.getElementById('feedback-icon');
         
-        for (let r = 0; r < activeGridRows; r++) {
-            for (let c = 0; c < activeGridCols; c++) {
-                const cell = document.createElement('div');
-                cell.className = 'grid-cell';
-                cell.textContent = grid[r][c];
-                cell.dataset.row = r;
-                cell.dataset.col = c;
+        // --- Ses Değişkenleri ---
+        let audioCtx = null;
+
+        // --- Durum Değişkenleri ---
+        let grid = []; 
+        let gridCells = [];
+        let currentLevel = 0; 
+        let wordData = [];
+        let wordsToFind = [];
+        let foundWords = [];
+        let isSelecting = false;
+        let selectionStart = null;
+        let currentSelection = [];
+        
+        // Mobil cihaz algılama fonksiyonu
+        function isMobileDevice() {
+            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+        // --- SES FONKSİYONLARI ---
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        function playSound(type) {
+            if (!audioCtx) return; 
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'select') { 
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(400, now);
+                gainNode.gain.setValueAtTime(0.05, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+                oscillator.start(now);
+                oscillator.stop(now + 0.1);
+            } else if (type === 'correct') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(440, now);
+                oscillator.frequency.linearRampToValueAtTime(880, now + 0.2);
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+                oscillator.start(now);
+                oscillator.stop(now + 0.2);
+            } else if (type === 'incorrect') {
+                oscillator.type = 'triangle'; 
+                oscillator.frequency.setValueAtTime(200, now);
+                oscillator.frequency.linearRampToValueAtTime(100, now + 0.2);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+                oscillator.start(now);
+                oscillator.stop(now + 0.2);
+            }
+        }
+        
+        document.body.addEventListener('click', initAudioContext, { once: true });
+
+
+        // --- OYUN KURULUMU ---
+
+        function initializeGame() {
+            // wordData'nın artık processed kelimeleri içerdiğini varsayıyoruz
+            wordData = activeLevelSet[currentLevel];
+            wordsToFind = wordData.map(data => data.word); // Bulunacak kelime listesi (Orijinal hali)
+
+            foundWords = [];
+            grid = [];
+            gridCells = [];
+            gridContainer.innerHTML = '';
+            wordListElement.innerHTML = '';
+            feedbackOverlay.classList.remove('show');
+            
+            instructionText.textContent = "اِبْحَثْ عَن الكَلِمات‫.‬";
+
+            renderWordList();
+            
+            // GÜNCELLEME: Dinamik ızgara boyutları kullanılıyor
+            for (let r = 0; r < activeGridRows; r++) {
+                grid[r] = [];
+                gridCells[r] = [];
+                for (let c = 0; c < activeGridCols; c++) {
+                    grid[r][c] = null;
+                }
+            }
+
+            placeWords();
+            fillEmptyCells();
+            renderGrid();
+        }
+
+        function renderWordList() {
+            wordData.forEach(data => {
+                const li = document.createElement('li');
+                li.className = 'word-list-item';
+                li.id = `word-${data.word}`;
+                li.textContent = `${data.emoji} ${data.word}`; // Orijinal kelimeyi göster
+                li.dataset.color = data.color; 
+                wordListElement.appendChild(li);
+            });
+        }
+        
+       function placeWords() {
+            // SADECE MEVCUT İKİ YÖN KULLANILACAK
+            const twoDirections = [
+                { dr: 1, dc: 0 },   // Yukarıdan Aşağıya (Dikey)
+                { dr: 0, dc: 1 }    // Soldan Sağa (Yatay)
+            ];
+            
+            // Yerleştirme verimliliğini artırmak için kelimeleri uzunluklarına göre sıralayabiliriz.
+            const sortedWordData = [...wordData].sort((a, b) => b.processedWord.length - a.processedWord.length);
+
+            for (const data of sortedWordData) {
+                const wordToPlace = data.processedWord; 
                 
-                gridContainer.appendChild(cell);
-                gridCells[r][c] = cell; 
+                let placed = false;
+                let attempts = 0;
+                
+                // Her deneme seti için yönleri rastgele karıştır
+                const shuffledDirections = [...twoDirections].sort(() => 0.5 - Math.random());
+                
+                // 200 deneme yap
+                while (!placed && attempts < 200) { 
+                    attempts++;
+                    
+                    const r = Math.floor(Math.random() * activeGridRows);
+                    const c = Math.floor(Math.random() * activeGridCols);
+
+                    // Her denemede, karıştırılmış iki yönden birini kullan
+                    const dir = shuffledDirections[attempts % shuffledDirections.length];
+
+                    if (canPlaceWord(wordToPlace, r, c, dir)) { 
+                        for (let j = 0; j < wordToPlace.length; j++) {
+                            grid[r + j * dir.dr][c + j * dir.dc] = wordToPlace[j];
+                        }
+                        placed = true;
+                    }
+                }
+            }
+        }
+        
+        function canPlaceWord(word, r, c, dir) {
+            for (let i = 0; i < word.length; i++) {
+                const newRow = r + i * dir.dr;
+                const newCol = c + i * dir.dc;
+
+                // GÜNCELLEME: Dinamik ızgara boyutları kullanılıyor
+                if (newRow >= activeGridRows || newCol >= activeGridCols || newRow < 0 || newCol < 0) {
+                    return false;
+                }
+                const cell = grid[newRow][newCol];
+                if (cell !== null) { 
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function fillEmptyCells() {
+            // GÜNCELLEME: Dinamik ızgara boyutları kullanılıyor
+            for (let r = 0; r < activeGridRows; r++) {
+                for (let c = 0; c < activeGridCols; c++) {
+                    if (grid[r][c] === null) {
+                        grid[r][c] = arabicLetters[Math.floor(Math.random() * arabicLetters.length)];
+                    }
+                }
             }
         }
 
-        gridContainer.addEventListener('mousedown', (e) => {
-            e.preventDefault(); 
-            handleSelectionStart(e); 
-        });
-        gridContainer.addEventListener('mousemove', (e) => {
-            handleSelectionMove(e); 
-        });
-        
-        gridContainer.addEventListener('touchstart', (e) => {
-            e.preventDefault(); 
-            handleSelectionStart(e.touches[0]); 
-        }, { passive: false });
-        gridContainer.addEventListener('touchmove', (e) => {
-            e.preventDefault(); 
-            handleSelectionMove(e.touches[0]); 
-        }, { passive: false });
-        
-        document.removeEventListener('mouseup', handleSelectionEnd);
-        document.addEventListener('mouseup', handleSelectionEnd);
-        
-        document.removeEventListener('touchend', handleSelectionEnd);
-        document.addEventListener('touchend', handleSelectionEnd);
-    }
-
-    // --- SEÇİM MANTIĞI ---
-    function getCellFromEvent(e) {
-        if (e.clientX && e.clientY) {
-            const element = document.elementFromPoint(e.clientX, e.clientY);
-            if (element && element.classList.contains('grid-cell')) {
-                return element;
-            }
-        }
-            if (e.target && e.target.classList.contains('grid-cell')) {
-            return e.target;
-        }
-        return null;
-    }
-
-    function handleSelectionStart(e) {
-        const cell = getCellFromEvent(e);
-        if (!cell || !cell.dataset) return;
-
-        isSelecting = true;
-        selectionStart = { row: parseInt(cell.dataset.row), col: parseInt(cell.dataset.col) };
-        currentSelection = [cell];
-        cell.classList.add('selecting');
-        playSound('select');
-    }
-
-    function handleSelectionMove(e) {
-        if (!isSelecting) return;
-        
-        const cell = getCellFromEvent(e);
-        if (!cell || !cell.dataset) return;
-
-        if (currentSelection.length > 0 && currentSelection[currentSelection.length - 1] === cell) {
-            return;
-        }
-
-        currentSelection.forEach(c => c.classList.remove('selecting'));
-        
-        const start = selectionStart;
-        const end = { row: parseInt(cell.dataset.row), col: parseInt(cell.dataset.col) };
-
-        currentSelection = getCellsInLine(start, end);
-        currentSelection.forEach(c => c.classList.add('selecting'));
-    }
-
-    function handleSelectionEnd() {
-        if (!isSelecting) return;
-        isSelecting = false;
-        
-        checkSelection();
-        
-        currentSelection.forEach(c => c.classList.remove('selecting'));
-        currentSelection = [];
-        selectionStart = null;
-    }
-    
-    function getCellsInLine(start, end) {
-        const line = [];
-        const diff_r = end.row - start.row;
-        const diff_c = end.col - start.col;
-        const abs_r = Math.abs(diff_r);
-        const abs_c = Math.abs(diff_c);
-        let dir_r, dir_c; 
-
-        if (abs_c > abs_r) { 
-            dir_r = 0;
-            dir_c = Math.sign(diff_c);
-        } else if (abs_r > abs_c) { 
-            dir_r = Math.sign(diff_r);
-            dir_c = 0;
-        } else { 
-            dir_r = Math.sign(diff_r);
-            dir_c = Math.sign(diff_c);
-        }
-        
-        const steps = Math.max(abs_r, abs_c);
-        
-        for (let i = 0; i <= steps; i++) {
-            let r = start.row + i * dir_r;
-            let c = start.col + i * dir_c;
-            if (gridCells[r] && gridCells[r][c]) {
-                line.push(gridCells[r][c]);
-            } else {
-                break; 
-            }
-        }
-        return line;
-    }
-    
-    // --- KONTROL ---
-    function checkSelection() {
-        if (currentSelection.length < 2) return;
-        
-        const selectedText = currentSelection.map(cell => cell.textContent).join('');
-        const selectedTextReversed = currentSelection.map(cell => cell.textContent).reverse().join('');
-        
-        let found = false;
-        
-        for (const data of processedLevelData) {
-            if (foundWords.includes(data.id)) continue; 
+        function renderGrid() {
+            gridContainer.innerHTML = ''; 
             
-            const target = data.gridTarget.join(''); 
+            // GÜNCELLEME: Dinamik ızgara boyutları kullanılıyor
+            for (let r = 0; r < activeGridRows; r++) {
+                for (let c = 0; c < activeGridCols; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.textContent = grid[r][c];
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    
+                    gridContainer.appendChild(cell);
+                    gridCells[r][c] = cell; 
+                }
+            }
+
+            // --- BİRLEŞTİRİLMİŞ FARE VE DOKUNMATİK OLAY YÖNETİCİLERİ ---
             
-            if (target === selectedText || target === selectedTextReversed) {
-                markAsFound(data); 
-                found = true;
-                break;
+            gridContainer.addEventListener('mousedown', (e) => {
+                e.preventDefault(); 
+                handleSelectionStart(e); 
+            });
+            gridContainer.addEventListener('mousemove', (e) => {
+                handleSelectionMove(e); 
+            });
+            
+            gridContainer.addEventListener('touchstart', (e) => {
+                e.preventDefault(); 
+                handleSelectionStart(e.touches[0]); 
+            }, { passive: false });
+            gridContainer.addEventListener('touchmove', (e) => {
+                e.preventDefault(); 
+                handleSelectionMove(e.touches[0]); 
+            }, { passive: false });
+            
+            document.removeEventListener('mouseup', handleSelectionEnd);
+            document.addEventListener('mouseup', handleSelectionEnd);
+            
+            document.removeEventListener('touchend', handleSelectionEnd);
+            document.addEventListener('touchend', handleSelectionEnd);
+        }
+
+        // --- SEÇİM MANTIĞI ---
+        
+        // DÜZELTME: Dokunmatik kaydırmada doğru harfi bulması için
+        function getCellFromEvent(e) {
+            if (e.clientX && e.clientY) {
+                const element = document.elementFromPoint(e.clientX, e.clientY);
+                if (element && element.classList.contains('grid-cell')) {
+                    return element;
+                }
+            }
+             if (e.target && e.target.classList.contains('grid-cell')) {
+                return e.target;
+            }
+            return null;
+        }
+
+        function handleSelectionStart(e) {
+            const cell = getCellFromEvent(e);
+            if (!cell || !cell.dataset) return;
+
+            isSelecting = true;
+            selectionStart = { row: parseInt(cell.dataset.row), col: parseInt(cell.dataset.col) };
+            currentSelection = [cell];
+            cell.classList.add('selecting');
+            playSound('select');
+        }
+
+        function handleSelectionMove(e) {
+            if (!isSelecting) return;
+            
+            const cell = getCellFromEvent(e);
+            if (!cell || !cell.dataset) return;
+
+            if (currentSelection.length > 0 && currentSelection[currentSelection.length - 1] === cell) {
+                return;
+            }
+
+            currentSelection.forEach(c => c.classList.remove('selecting'));
+            
+            const start = selectionStart;
+            const end = { row: parseInt(cell.dataset.row), col: parseInt(cell.dataset.col) };
+
+            currentSelection = getCellsInLine(start, end);
+            currentSelection.forEach(c => c.classList.add('selecting'));
+        }
+
+        function handleSelectionEnd() {
+            if (!isSelecting) return;
+            isSelecting = false;
+            
+            checkSelection();
+            
+            currentSelection.forEach(c => c.classList.remove('selecting'));
+            currentSelection = [];
+            selectionStart = null;
+        }
+        
+        // DÜZELTME: "Titreyen" parmaklar için "affedici" kaydırma
+        function getCellsInLine(start, end) {
+            const line = [];
+            const diff_r = end.row - start.row;
+            const diff_c = end.col - start.col;
+            const abs_r = Math.abs(diff_r);
+            const abs_c = Math.abs(diff_c);
+            let dir_r, dir_c; 
+
+            if (abs_c > abs_r) { 
+                dir_r = 0;
+                dir_c = Math.sign(diff_c);
+            } else if (abs_r > abs_c) { 
+                dir_r = Math.sign(diff_r);
+                dir_c = 0;
+            } else { 
+                dir_r = Math.sign(diff_r);
+                dir_c = Math.sign(diff_c);
+            }
+            
+            const steps = Math.max(abs_r, abs_c);
+            
+            for (let i = 0; i <= steps; i++) {
+                let r = start.row + i * dir_r;
+                let c = start.col + i * dir_c;
+                if (gridCells[r] && gridCells[r][c]) {
+                    line.push(gridCells[r][c]);
+                } else {
+                    break; 
+                }
+            }
+            return line;
+        }
+        
+        // --- KONTROL MANTIĞI (GÜNCELLENDİ) ---
+        
+        function checkSelection() {
+            if (currentSelection.length < 2) return;
+            
+            // YENİ: Kullanıcının ızgaradan seçtiği kelime
+            const selectedWordRaw = currentSelection.map(cell => cell.textContent).join(''); 
+            
+            let found = false;
+            
+            for (const data of wordData) {
+                const originalWord = data.word;         // Orijinal (şeddeli olabilen) kelime
+                const processedWord = data.processedWord; // Izgarada yer alan (şeddesiz) kelime
+                
+                if (foundWords.includes(originalWord)) continue; 
+                
+                // Seçilen ham kelimeyi şeddesiz kelimeyle karşılaştır
+                if (selectedWordRaw === processedWord) {
+                    markAsFound(originalWord); // Orijinal kelimeyi buldu olarak işaretle
+                    found = true;
+                    break;
+                }
+                
+                // Tersine döndürülmüş kelime kontrolü
+                const processedWordReversed = processedWord.split('').reverse().join('');
+                if (selectedWordRaw === processedWordReversed) {
+                    markAsFound(originalWord); // Orijinal kelimeyi buldu olarak işaretle
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                playSound('incorrect');
             }
         }
         
-        if (!found) {
-            playSound('incorrect');
-        }
-    }
-    
-    function markAsFound(data) {
-        playSound('correct');
-        
-        const listItem = document.getElementById(`word-item-${data.id.replace(/\s/g, '-')}`);
-        const color = data.color;
-        
-        currentSelection.forEach(cell => {
-            cell.classList.add('found');
-            cell.style.backgroundColor = color; 
-        });
-        
-        if (listItem) {
+        function markAsFound(word) {
+            playSound('correct');
+            
+            const listItem = document.getElementById(`word-${word}`);
+            const color = listItem.dataset.color;
+            
+            currentSelection.forEach(cell => {
+                cell.classList.add('found');
+                cell.style.backgroundColor = color; 
+            });
+            
             listItem.classList.add('found');
             listItem.style.color = color; 
+            
+            foundWords.push(word);
+            
+            if (foundWords.length === wordsToFind.length) {
+                setTimeout(showWinScreen, 1000);
+            }
         }
-        
-        foundWords.push(data.id);
-        
-        if (foundWords.length === processedLevelData.length) {
-            setTimeout(showWinScreen, 1000);
+
+        // --- Bitiş Ekranı ve Yeniden Başlatma ---
+        function showWinScreen() {
+            currentLevel++;
+            // GÜNCELLEME: Dinamik seviye setinin uzunluğunu kontrol et
+            if (currentLevel >= activeLevelSet.length) {
+                currentLevel = 0; 
+            }
+            
+            instructionText.textContent = "أَحْسَنْت! لَقَد أَكْمَلْتَ";
+            feedbackIcon.textContent = '✔';
+            
+            feedbackIcon.className = 'correct';
+            feedbackOverlay.classList.add('show');
         }
-    }
 
-    // --- Bitiş ve Yeniden Başlatma ---
-    function showWinScreen() {
-        const replayBtn = document.getElementById('replay-button-end');
-        
-        feedbackIcon.textContent = '✔';
-        feedbackIcon.className = 'correct';
-        feedbackOverlay.classList.add('show');
-
-        currentLevel++; 
-
-        if (currentLevel < activeLevelSet.length) {
-            instructionText.textContent = "أَحْسَنْت! ننتقل للمستوى التالي..."; 
-            replayBtn.style.display = 'none';
-
-            setTimeout(() => {
-                feedbackOverlay.classList.remove('show');
-                initializeGame();
-            }, 2000);
-
-        } else {
-            currentLevel = 0; 
-            instructionText.textContent = "مُبَارَك! لَقَد أَنْهَيْتَ اللُّعْبَة"; 
-            replayBtn.style.display = 'block';
+        function restartGame() {
+            playSound('select');
+            initializeGame();
         }
-    }
 
-    function restartGame() {
-        playSound('select');
-        initializeGame();
-    }
+        // --- Tam Ekran Fonksiyonları ---
+        function setupFullscreen() {
+            const fsBtn = document.getElementById('fullscreen-btn');
+            if (!fsBtn) return;
 
-    // --- Fullscreen Setup ---
-    function setupFullscreen() {
-        const fsBtn = document.getElementById('fullscreen-btn');
-        if (!fsBtn) return;
-
-        fsBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                const el = document.documentElement;
-                if (el.requestFullscreen) {
-                    el.requestFullscreen();
-                } else if (el.mozRequestFullScreen) {
-                    el.mozRequestFullScreen();
-                } else if (el.webkitRequestFullscreen) {
-                    el.webkitRequestFullscreen();
-                } else if (el.msRequestFullscreen) {
-                    el.msRequestFullscreen();
+            fsBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                    const el = document.documentElement;
+                    if (el.requestFullscreen) {
+                        el.requestFullscreen();
+                    } else if (el.mozRequestFullScreen) {
+                        el.mozRequestFullScreen();
+                    } else if (el.webkitRequestFullscreen) {
+                        el.webkitRequestFullscreen();
+                    } else if (el.msRequestFullscreen) {
+                        el.msRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        document.mozCancelFullScreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
                 }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
+            });
+
+            function handleFullscreenChange() {
+                if (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+                    document.body.classList.add('fullscreen');
+                } else {
+                    document.body.classList.remove('fullscreen');
                 }
             }
+
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('msfullscreenchange', handleFullscreenChange);
+        }
+        
+        // --- Başlangıç ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // GÜNCELLEME: Cihaza göre ayarları yükle
+            if (isMobileDevice()) {
+                activeLevelSet = mobileLevels;
+                activeGridCols = mobileGridCols;
+                activeGridRows = mobileGridRows;
+            } else {
+                activeLevelSet = desktopLevels;
+                activeGridCols = desktopGridCols;
+                activeGridRows = desktopGridRows;
+            }
+            
+            // Şedde dönüşümünü tüm seviyelere uygula
+            activeLevelSet = preprocessLevels(activeLevelSet); 
+
+            // GÜNCELLEME: CSS değişkenlerini dinamik olarak ayarla
+            const rootStyle = document.documentElement.style;
+            rootStyle.setProperty('--grid-size-cols', activeGridCols);
+            rootStyle.setProperty('--grid-size-rows', activeGridRows);
+
+            // Oyunu başlat
+            initializeGame();
+            setupFullscreen(); 
         });
 
-        function handleFullscreenChange() {
-            if (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
-                document.body.classList.add('fullscreen');
-            } else {
-                document.body.classList.remove('fullscreen');
-            }
-        }
+    </script>
 
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        document.addEventListener('msfullscreenchange', handleFullscreenChange);
-    }
-    
-    // --- Başlangıç ---
-    document.addEventListener('DOMContentLoaded', () => {
-        activeLevelSet = allLevelsData;
-        activeGridCols = desktopGridCols;
-        activeGridRows = desktopGridRows;
-        
-        const rootStyle = document.documentElement.style;
-        rootStyle.setProperty('--grid-size-cols', activeGridCols);
-        rootStyle.setProperty('--grid-size-rows', activeGridRows);
-
-        initializeGame();
-        setupFullscreen(); 
-    });
-
-</script>
 </body>
 </html>
