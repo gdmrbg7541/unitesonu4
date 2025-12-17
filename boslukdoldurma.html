@@ -29,21 +29,61 @@
         }
 
         /* --- Ana Etkinlik Alanı (MASAÜSTÜ BOYUTLARI KORUNDU) --- */
-        .activity-container {
-            aspect-ratio: 16 / 9;
-            position: relative;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            /* Yüklediğiniz dosyadan aynen alındı (MASAÜSTÜ) */
-            width: 90vw;
-            height: calc(90vw * 9 / 16);
-            max-height: 90vh;
-            max-width: calc(90vh * 16 / 9);
-        }
+        /* --- Ana Etkinlik Alanı (Masaüstü İyileştirmesi) --- */
+.activity-container {
+    aspect-ratio: 16 / 9;
+    position: relative;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    
+    /* GÜNCELLEME: Minimum genişlik ve yükseklik eklendi */
+    width: 95vw;
+    max-width: 1200px; /* Çok geniş ekranlarda devasa olmaması için */
+    min-width: 800px;  /* Tam ekrandan çıkınca aşırı küçülmeyi engeller */
+    
+    height: auto; 
+    min-height: 500px; /* İçeriğin sıkışmasını önler */
+    margin: auto;
+}
+
+/* --- Cevap Kutusu (Yatayda Geniş, Soruyla Uyumlu) --- */
+.answer-input {
+    font-family: var(--font-arabic);
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    padding: 10px 20px;
+    
+    /* GÜNCELLEME: Yatayda daha geniş yapıldı */
+    width: 400px; 
+    min-width: 250px;
+    max-width: 80%;
+    
+    height: 80px; /* Yüksekliği biraz azaltıldı */
+    line-height: 1.2;
+    font-size: 0.8em; /* Soru metninden biraz daha küçük olması için */
+    
+    background: #f8f9fa;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 15px;
+    font-weight: 700;
+}
+
+/* --- Soru Metni (Boyutu Dengelendi) --- */
+.question-text {
+    /* GÜNCELLEME: clamp değerleri küçültüldü */
+    font-size: clamp(1.5rem, 3.5vw, 4rem); 
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    text-align: center;
+}
 
         body.fullscreen .activity-container {
             width: 100vw;
@@ -191,7 +231,7 @@
         }
         .question-text {
             /* MASAÜSTÜ boyutu korundu */
-            font-size: clamp(2.5rem, 5vw, 6rem);
+            font-size: clamp(2rem, 5vw, 5.5rem);
             font-weight: 700;
             color: #212529;
             margin-bottom: 20px;
@@ -199,7 +239,7 @@
             align-items: center;
             flex-wrap: wrap;
             justify-content: center;
-            line-height: 1.6;
+            line-height: 1.5;
             white-space: normal; 
             text-align: center;
         }
@@ -208,10 +248,10 @@
         border: 2px solid var(--accent-color);
         border-radius: 8px;
         padding: 15px 15px; 
-        width: 300px;
+        width: 375px;
         max-width: 80%;
         text-align: center;
-        margin: 0 15px;
+        margin: 10 15px;
         
         /* 🔥 SABİT YÜKSEKLİK VE LINE-HEIGHT */
         height: 110px; 
@@ -223,7 +263,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: inherit; 
+        font-size: 0.9em; 
         font-weight: 700;
     }
         
@@ -801,7 +841,6 @@
     },
     
 ];
-
         // --- Gerekli Elementler ---
         const activityArea = document.getElementById('activity-area');
         const instructionText = document.getElementById('instruction-text');
@@ -1180,7 +1219,7 @@
                 // 🔥 YAMA BAŞLANGICI: Geri bildirimde gizlenecek basitleştirilmiş kelimeler
                 // Bu kelimeler, asıl hemzeli/elifli formları kabul etmek için eklenmiş
                 // klavye dostu, basitleştirilmiş versiyonlardır ve geri bildirimde gösterilmeyecektir.
-                const variantsToExclude = ["انت", "انا", "الى", "اصلي", "اكون", "انتم"];
+                const variantsToExclude = ["اَسْمَعُ","الاَحْمَر","الاَخْضَر","الاَصْفَر", "اَرى", "اَشْعُرُ", "اَشُمُّ", "اَلْمِسُ","اَذوقُ","اَصْدِقائي"];
                 
                 // Cevap listesini filtrele: Sadece ana (canonical) kelimeleri bırakır.
                 const canonicalAnswers = Array.isArray(correctAnswer) 
