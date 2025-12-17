@@ -30,6 +30,7 @@
 
         /* --- Ana Etkinlik Alanı (MASAÜSTÜ BOYUTLARI KORUNDU) --- */
         .activity-container {
+            aspect-ratio: 16 / 9;
             position: relative;
             background: #ffffff;
             border-radius: 12px;
@@ -190,7 +191,7 @@
         }
         .question-text {
             /* MASAÜSTÜ boyutu korundu */
-            font-size: clamp(2.0rem, 5vw, 6rem);
+            font-size: clamp(2.5rem, 5vw, 6rem);
             font-weight: 700;
             color: #212529;
             margin-bottom: 20px;
@@ -482,69 +483,83 @@
             .activity-container { display: none; } /* Dikeyde aktiviteyi gizle */
         }
 
-        /* ------------------------------------------------------------------ */
-        /* --- MOBİL YATAY (LANDSCAPE) MOD KÜÇÜLTME YAMASI --- */
-        /* (Ekran yüksekliği 900px ve altı olan yatay cihazlar için) */
-        /* ------------------------------------------------------------------ */
-        @media only screen and (max-height: 900px) and (orientation: landscape) {
-            
-            /* Başlık Alanı ve Elementleri */
-            .header {
-                padding: 8px 15px;
-                gap: 10px;
-                grid-template-columns: 250px 1fr 250px; /* Progress bar ve back butonu alanı daraltıldı */
-            }
-            #instruction-text {
-                font-size: clamp(1.5rem, 1.8vw, 2.5rem); 
-            }
-            .progress-container { width: 250px; }
-            #progress-display { font-size: 1.2rem; }
-            .back-button, #fullscreen-btn {
-                width: clamp(35px, 6vmin, 45px);
-                height: clamp(35px, 6vmin, 45px);
-            }
-            .back-button svg, #fullscreen-btn svg {
-                 width: clamp(20px, 4vmin, 25px);
-                 height: clamp(20px, 4vmin, 25px);
-            }
+     /* ------------------------------------------------------------------ */
+/* --- MOBİL YATAY (LANDSCAPE) MOD KÜÇÜLTME YAMASI --- */
+/* (Ekran yüksekliği 900px ve altı olan yatay cihazlar için) */
+/* ------------------------------------------------------------------ */
+@media only screen and (max-height: 900px) and (orientation: landscape) {
+    
+    /* Başlık Alanı ve Elementleri */
+    .header {
+        padding: 8px 8px;
+        gap: 10px;
+        /* YAMA: Progress bar ve back butonu alanını 150 piksele düşürdük */
+        grid-template-columns: 200px 1fr 200px; 
+    }
+    
+    #instruction-text {
+        font-size: clamp(1.5rem, 1.8vw, 2.5rem); 
+    }
+    
+    /* YAMA: Progress bar container genişliği 150px olarak ayarlandı */
+    .progress-container { 
+        width: 200px; 
+        gap: 8px; /* Boşluğu biraz daha daralttık */
+    }
+    #progress-display { font-size: 1.1rem; }
+    .progress-bar-container { height: 8px; } /* Progress bar yüksekliğini 8px'e düşürdük */
+    
+    .back-button, #fullscreen-btn {
+        width: clamp(30px, 5vmin, 40px);
+        height: clamp(30px, 5vmin, 40px);
+    }
+    .back-button svg, #fullscreen-btn svg {
+         width: clamp(18px, 3.5vmin, 22px);
+         height: clamp(18px, 3.5vmin, 22px);
+    }
 
 
-            .answer-input {
-                width: 250px; /* Daha dar input */
-                height: 110px; /* Sabit yükseklik korundu */
-                line-height: 1.6;
-                padding: 12px 12px;
-                margin: 0 10px;
-            }
-            
-            /* Klavye Küçültme */
-            .keyboard-container {
-                padding: 0 5px;
-                margin-top: 5px;
-            }
-            .key-row {
-                gap: 0.5vw;
-                margin-bottom: 0.5vw;
-            }
-            .key-container {
-                max-width: 65px;
-                height: clamp(40px, 6vh, 60px); 
-            }
-            .key, .variant-key {
-                font-size: clamp(1.2rem, 1.7vw, 2.2rem); 
-            }
-            .key.backspace { font-size: 1rem; }
+    /* Cevap Kutusu Yüksekliğini ÖNEMLİ ÖLÇÜDE Küçültme (Dikey Alan Kazanımı) */
+    .question-text {
+         font-size: clamp(2rem, 3.5vw, 4.5rem); 
+    }
+    .answer-input {
+        width: 120px; 
+        height: 40px !important; /* Yüksekliği 60px'e düşürdük */
+        line-height: 1.2 !important; 
+        padding: 8px 10px;
+        margin: 0 8px;
+        font-size: clamp(1.8rem, 3vw, 4rem);
+    }
+    
+    /* Klavye Küçültme */
+    .keyboard-container {
+        padding: 0 2px;
+        margin-top: 5px;
+    }
+    .key-row {
+        gap: 1vw;
+        margin-bottom: 1vw;
+    }
+    .key-container {
+        max-width: 60px;
+        height: clamp(30px, 5vh, 50px); /* Klavye tuşu yüksekliği küçültüldü */
+    }
+    .key, .variant-key {
+        font-size: clamp(1.1rem, 1.5vw, 2.0rem); 
+    }
+    .key.backspace { font-size: 0.9rem; }
 
-            /* Kontrol Butonları */
-            #check-scramble-btn, #reset-scramble-btn {
-                padding: 10px 20px;
-                font-size: 1.5rem;
-            }
-            
-            /* Geri Bildirim */
-            #feedback-correct-answer { font-size: 3rem; }
-            #feedback-ok-button { width: 55px; height: 55px; font-size: 2rem; margin-top: 15px;}
-        }
+    /* Kontrol Butonları */
+    #check-scramble-btn, #reset-scramble-btn {
+        padding: 5px 5px;
+        font-size: 1.0rem;
+    }
+    
+    /* Geri Bildirim */
+    #feedback-correct-answer { font-size: 2.8rem; }
+    #feedback-ok-button { width: 30px; height: 30px; font-size: 1.8rem; margin-top: 5px;}
+}
     </style>
 </head>
 <body>
@@ -602,7 +617,7 @@
                 <path d="M17 1H7C5.9 1 5 1.9 5 3v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm-2 20H9v-1h6v1zm2-3H7V6h10v12z" />
             </svg>
         </div>
-       <p>الرجاء تدوير الجهاز إلى الوضع الأفقي لبدء التمرين.</p>
+       
     </div>
 
     <script>
@@ -656,8 +671,7 @@
             ["Backspace", "ظ","ز","و","ة","ى","ر","ؤ","ء","ئ"] 
         ];
 
-         // --- Etkinlik Verileri ---
-        const activitiesData = [
+       const activitiesData = [
     
     
     // 1. Cümle: Sabah erkenden uyanırım.
@@ -1166,7 +1180,7 @@
                 // 🔥 YAMA BAŞLANGICI: Geri bildirimde gizlenecek basitleştirilmiş kelimeler
                 // Bu kelimeler, asıl hemzeli/elifli formları kabul etmek için eklenmiş
                 // klavye dostu, basitleştirilmiş versiyonlardır ve geri bildirimde gösterilmeyecektir.
-                const variantsToExclude = ["اَوْرَاق", "احْمَر", "اَصْفَر", "اَرْبَعَة", "اَزْرَق", "انتم"];
+                const variantsToExclude = ["انت", "انا", "الى", "اصلي", "اكون", "انتم"];
                 
                 // Cevap listesini filtrele: Sadece ana (canonical) kelimeleri bırakır.
                 const canonicalAnswers = Array.isArray(correctAnswer) 
