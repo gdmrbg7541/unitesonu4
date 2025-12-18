@@ -523,82 +523,134 @@
             .activity-container { display: none; } /* Dikeyde aktiviteyi gizle */
         }
 
-     /* ------------------------------------------------------------------ */
-/* --- MOBİL YATAY (LANDSCAPE) MOD KÜÇÜLTME YAMASI --- */
-/* (Ekran yüksekliği 900px ve altı olan yatay cihazlar için) */
+      /* ------------------------------------------------------------------ */
+/* --- MOBİL YATAY (LANDSCAPE) MOD KÜÇÜLTME YAMASI (TAM SÜRÜM) --- */
 /* ------------------------------------------------------------------ */
 @media only screen and (max-height: 900px) and (orientation: landscape) {
     
-    /* Başlık Alanı ve Elementleri */
+    /* --- Genel Düzen ve Başlık --- */
     .header {
-        padding: 8px 8px;
+        padding: 5px 10px;
         gap: 10px;
-        /* YAMA: Progress bar ve back butonu alanını 150 piksele düşürdük */
         grid-template-columns: 200px 1fr 200px; 
+        border-bottom: 1px solid #eee;
     }
     
     #instruction-text {
-        font-size: clamp(1.5rem, 1.8vw, 2.5rem); 
+        font-size: clamp(1.2rem, 1.8vw, 2rem); 
     }
     
-    /* YAMA: Progress bar container genişliği 150px olarak ayarlandı */
     .progress-container { 
-        width: 200px; 
-        gap: 8px; /* Boşluğu biraz daha daralttık */
+        width: 180px; 
+        gap: 8px; 
     }
-    #progress-display { font-size: 1.1rem; }
-    .progress-bar-container { height: 8px; } /* Progress bar yüksekliğini 8px'e düşürdük */
+    #progress-display { font-size: 1rem; }
+    .progress-bar-container { height: 6px; }
     
     .back-button, #fullscreen-btn {
-        width: clamp(30px, 5vmin, 40px);
-        height: clamp(30px, 5vmin, 40px);
+        width: 35px;
+        height: 35px;
     }
     .back-button svg, #fullscreen-btn svg {
-         width: clamp(18px, 3.5vmin, 22px);
-         height: clamp(18px, 3.5vmin, 22px);
+         width: 20px;
+         height: 20px;
     }
 
+    /* --- Soru ve Cevap Alanı --- */
+    .activity-area {
+        padding-top: 5px;
+    }
 
-    /* Cevap Kutusu Yüksekliğini ÖNEMLİ ÖLÇÜDE Küçültme (Dikey Alan Kazanımı) */
     .question-text {
-         font-size: clamp(2rem, 3.5vw, 4.5rem); 
+         font-size: clamp(1.5rem, 4vw, 3rem); 
+         margin-bottom: 8px;
     }
+
     .answer-input {
-        width: 120px; 
-        height: 40px !important; /* Yüksekliği 60px'e düşürdük */
+        width: 140px; 
+        height: 45px !important; 
         line-height: 1.2 !important; 
-        padding: 8px 10px;
+        padding: 5px 10px;
         margin: 0 8px;
-        font-size: clamp(1.8rem, 3vw, 4rem);
+        font-size: 1.5rem;
     }
     
-    /* Klavye Küçültme */
+    /* --- Klavye Düzeni --- */
     .keyboard-container {
         padding: 0 2px;
-        margin-top: 5px;
+        margin-top: 2px;
     }
     .key-row {
-        gap: 1vw;
-        margin-bottom: 1vw;
+        gap: 8px; /* Tuşlar arasındaki yatay boşluk artırıldı */
+        margin-bottom: 8px; /* Satırlar arasındaki dikey boşluk artırıldı */
+        justify-content: center;
     }
     .key-container {
-        max-width: 60px;
-        height: clamp(30px, 5vh, 50px); /* Klavye tuşu yüksekliği küçültüldü */
+        max-width: 55px;
+        height: clamp(35px, 9vh, 50px); 
     }
-    .key, .variant-key {
-        font-size: clamp(1.1rem, 1.5vw, 2.0rem); 
+    .key, .variant-key { 
+        font-size: clamp(1.1rem, 1.5vw, 1.8rem); 
+        border-radius: 6px; /* Tuş köşelerini biraz yumuşattık */
     }
-    .key.backspace { font-size: 0.9rem; }
+    .key.backspace { font-size: 1rem; }
 
-    /* Kontrol Butonları */
+    /* --- Kontrol Butonları --- */
     #check-scramble-btn, #reset-scramble-btn {
-        padding: 5px 5px;
-        font-size: 1.0rem;
+        padding: 8px 20px;
+        font-size: 1.1rem;
+        margin-top: 5px;
     }
-    
-    /* Geri Bildirim */
-    #feedback-correct-answer { font-size: 2.8rem; }
-    #feedback-ok-button { width: 30px; height: 30px; font-size: 1.8rem; margin-top: 5px;}
+
+   .feedback-overlay {
+        flex-direction: column; 
+        justify-content: center; /* DİKEYDE TAM ORTALAR */
+        align-items: center;    /* YATAYDA TAM ORTALAR */
+        padding-top: 0;         /* Üst boşluğu kaldırdık */
+        background: rgba(255, 255, 255, 0.98);
+    }
+
+    #feedback-icon {
+        font-size: 18vh; /* Çarpı/Tik boyutunu dikey yüksekliğe oranla */
+        margin-bottom: 10px;
+        line-height: 1;
+        display: block;
+        text-align: center;
+    }
+
+    #feedback-details {
+        position: relative;
+        bottom: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin-top: 0;
+    }
+
+    #feedback-correct-answer {
+        font-size: clamp(1.1rem, 5vh, 2rem) !important; /* Tek satıra sığacak şekilde küçülür */
+        padding: 8px 20px;
+        white-space: nowrap; /* Metni tek satırda tutar */
+        overflow: hidden;
+        text-overflow: ellipsis; /* Taşarsa üç nokta koyar */
+        max-width: 90%;
+        margin-bottom: 15px;
+        border-width: 1px;
+        display: block;
+    }
+
+    #feedback-ok-button {
+        width: 55px !important; 
+        height: 55px !important; 
+        font-size: 2rem !important; 
+        margin-top: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
 }
     </style>
 </head>
@@ -756,7 +808,7 @@
     { 
         pre: "هُو يَلْبَسُ المِعْطَف في فَصْل", 
         post: "", 
-        a: "الشِّتاء", 
+        a: ["الخَريف","الشِّتاء"], 
         hint: "İsim (Kış)" 
     },
     { 
@@ -811,7 +863,7 @@
     { 
         pre: "", 
         post: "حَليمَة الشّاي وَالقَهْوَة", 
-        a: ["تَشْرَبُ", "شَرِبَتْ"], 
+        a: ["تُفَضِّلُ","تَشْرَبُ", "شَرِبَتْ"], 
         hint: "Fiil (İçiyor veya İçti)" 
     },
     { 

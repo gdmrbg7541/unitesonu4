@@ -410,27 +410,35 @@
 
             /* --- Sol Taraf (Kutular) --- */
             .drop-zones-container {
-                gap: 15px; 
-                padding: 0;
+                gap: 10px 10px; 
+                padding: 10;
             }
 
             .category-drop-zone {
-                min-height: auto; 
-                padding: 8px; 
-                
-                gap: 8px !important; 
-                
-                /* Mobilde kelimeler daha rahat sığsın diye genişliği esnettik */
-                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
-                
-                justify-content: center; 
-            }
+        /* İŞTE BOYUTU BELİRLEYEN KISIM BURASI */
+        height: 120px !important; 
+        min-height: 100px !important;
+        max-height: 250px !important;
+        
+        padding: 8px 4px 4px 4px !important;
+        gap: 10px 10px !important;
+        
+        display: grid;
+        grid-template-columns: repeat(3, 1fr) !important; /* 3 Sütun */
+        grid-auto-rows: 32px; /* Her kelime 32px */
+        
+        overflow-y: auto; 
+        align-content: start;
+    }
 
-            .category-drop-zone h3 {
-                font-size: 1.6rem; 
-                margin-bottom: 5px;
-            }
-
+           .category-drop-zone h3 {
+    font-size: 2rem; 
+    margin-bottom: 0;   /* Başlığın dışındaki alt boşluğu sıfırladık */
+    padding-bottom: 0; /* ÇİZGİ İLE YAZI ARASINDAKİ BOŞLUK BURASIDIR */
+    border-bottom: 1px solid #ddd; /* Alt çizgi */
+    grid-column: 1 / -1; 
+    
+}
             /* --- Sağ Taraf (Kelime Bankası) --- */
             .word-bank-container {
                 flex: 0 0 25%; 
@@ -440,9 +448,9 @@
             }
 
             .word-item {
-                font-size: 1.3rem; 
-                min-height: 32px;  
-                padding: 2px;
+                font-size: 1.4rem; 
+                min-height: 28px;  
+               padding: 1px 2px;
             }
             
             #check-button {
@@ -579,11 +587,11 @@
                         <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
                     </svg>
                 </button>
-                <a href="#" onclick="location.reload()" class="back-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-                    </svg>
-                </a>
+                <a href="index.html" class="back-button">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+    </svg>
+</a>
             </div>
         </div>
 
@@ -624,7 +632,8 @@
             '#ff6b6b', '#fca311', '#90be6d', '#43aa8b', '#577590', '#f94144'
         ];
 
-        const activityDataBank = [
+        // --- Veri Bankası ---
+      const activityDataBank = [
     // 1. TUR: MEVSİMLER, HAVA DURUMU VE KIYAFETLER (Ders 1 Odaklı)
     {
         title: "صَنِّف الكَلِمات‫.‬", 
